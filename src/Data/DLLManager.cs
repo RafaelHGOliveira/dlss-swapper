@@ -29,6 +29,12 @@ internal class DLLManager : IDLLManager
         DLLRecord.CreateTranslationPropertiesDelegate = () => new DLLRecordModelTranslationProperties();
         FileDownloader.RunOnUIThreadDelegate = action => App.CurrentApp.RunOnUIThread(action);
         FileDownloader.GetHttpClientDelegate = () => App.CurrentApp.HttpClient;
+
+        // Wire up GameBase static service refs (Core types need to access Windows singletons)
+        DLSS_Swapper.Core.Data.GameBase.DatabaseService = Database.Instance;
+        DLSS_Swapper.Core.Data.GameBase.DllManagerService = DLLManager.Instance;
+        DLSS_Swapper.Core.Data.GameBase.GameManagerService = GameManager.Instance;
+        DLSS_Swapper.Core.Data.GameBase.SettingsService = Settings.Instance;
     }
 
     // NOTE: DLL type
