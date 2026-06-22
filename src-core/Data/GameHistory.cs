@@ -34,12 +34,7 @@ public class GameHistory
     {
         get
         {
-            if (AssetType is null)
-            {
-                return string.Empty;
-            }
-
-            return DLLManager.Instance.GetAssetTypeName(AssetType.Value);
+            return AssetType?.ToString() ?? string.Empty;
         }
     }
 
