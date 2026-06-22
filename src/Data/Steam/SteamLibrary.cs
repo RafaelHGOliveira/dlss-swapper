@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ValveKeyValue;
 
@@ -133,7 +132,6 @@ internal partial class SteamLibrary : IGameLibrary
         // If the file already exists in knownAppManifestPaths we can skip it.
         // If the file does not exist in knownAppManifestPaths we should process it as it is likly freshly installed.
 
-        var appManifestRegex = new Regex(@"^(.*)\\appmanifest_(?<app_id>\d*)\.acf$");
         foreach (var steamAppPath in steamAppsPaths)
         {
             var appManifestPaths = Directory.GetFiles(steamAppPath, "*.acf", SearchOption.TopDirectoryOnly);
@@ -141,10 +139,9 @@ internal partial class SteamLibrary : IGameLibrary
             {
                 foreach (var appManifestPath in appManifestPaths)
                 {
-                    var match = appManifestRegex.Match(appManifestPath);
-                    if (match.Success)
+                    var appId = DLSS_Swapper.Core.Data.Steam.SteamManifestParser.TryGetAppIdFromManifestPath(appManifestPath);
+                    if (appId is not null)
                     {
-                        var appId = match.Groups["app_id"].Value;
 
                         // If the app_id is not known this is either a new install or a corrupt/leftover file.
                         if (knownAppManifestPaths.ContainsKey(appId) == false)
