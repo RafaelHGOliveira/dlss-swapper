@@ -1,15 +1,18 @@
 using CommunityToolkit.Mvvm.Messaging;
+using DLSS_Swapper.Core.Interfaces;
 using DLSS_Swapper.Data;
 using DLSS_Swapper.Interfaces;
 using DLSS_Swapper.Pages;
 using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 
 namespace DLSS_Swapper;
 
-public class Settings
+public class Settings : ISettings
 {
     static Settings? _instance;
 
@@ -393,12 +396,52 @@ public class Settings
 
     internal void SaveJson()
     {
-        Storage.SaveSettingsJson(this);
+        SaveSettingsJson(this);
+    }
+
+    internal static void SaveSettingsJson(Settings settings)
+    {
+        var settingsFile = Path.Combine(Storage.GetDynamicJsonFolder(), "settings.json");
+        try
+        {
+            using (var stream = File.Open(settingsFile, FileMode.Create))
+            {
+                JsonSerializer.Serialize(stream, settings, SourceGenerationContext.Default.Settings);
+            }
+        }
+        catch (Exception err)
+        {
+            Logger.Error(err);
+        }
+    }
+
+    internal static Settings? LoadSettingsJson()
+    {
+        var settingsFile = Path.Combine(Storage.GetDynamicJsonFolder(), "settings.json");
+
+        // If the settings file doesn't exist we return null to default it elsewhere.
+        if (File.Exists(settingsFile) == false)
+        {
+            return null;
+        }
+
+        try
+        {
+            using (var stream = File.OpenRead(settingsFile))
+            {
+                return JsonSerializer.Deserialize(stream, SourceGenerationContext.Default.Settings);
+            }
+        }
+        catch (Exception err)
+        {
+            Logger.Error(err);
+            return null;
+        }
     }
 
     static Settings FromJson()
     {
-        var settings = Storage.LoadSettingsJson();
+        var settings = LoadSettingsJson();
 
         // If we couldn't load settings then save the defaults.
         if (settings is null)

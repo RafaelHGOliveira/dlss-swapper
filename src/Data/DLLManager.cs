@@ -9,14 +9,27 @@ using System.Reflection;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using DLSS_Swapper.Core.Interfaces;
 using DLSS_Swapper.Extensions;
 using DLSS_Swapper.Helpers;
+using DLSS_Swapper.Interfaces;
 
 namespace DLSS_Swapper.Data;
 
-internal class DLLManager
+internal class DLLManager : IDLLManager
 {
     public static DLLManager Instance { get; private set; } = new DLLManager();
+
+    static DLLManager()
+    {
+        DLLRecord.RunOnUIThreadDelegate = action => App.CurrentApp.RunOnUIThread(action);
+        DLLRecord.ExtractFromZipDelegate = (zip, rec) => DLLManager.HandleExtractFromZip(zip, rec);
+        DLLRecord.GetDownloadErrorMessageDelegate = assetType =>
+            ResourceHelper.GetFormattedResourceTemplate("DllRecord_CouldNotDownloadAssetTypeTemplate", DLLManager.Instance.GetAssetTypeName(assetType));
+        DLLRecord.CreateTranslationPropertiesDelegate = () => new DLLRecordModelTranslationProperties();
+        FileDownloader.RunOnUIThreadDelegate = action => App.CurrentApp.RunOnUIThread(action);
+        FileDownloader.GetHttpClientDelegate = () => App.CurrentApp.HttpClient;
+    }
 
     // NOTE: DLL type
     public ObservableCollection<DLLRecord> DLSSRecords { get; } = new ObservableCollection<DLLRecord>();
@@ -806,14 +819,11 @@ internal class DLLManager
         };
     }
 
-    /// <summary>
-    /// Checks to see if the current GameAsset DLL is known to already existing DLL record known GameAsset for a game in a particular library
-    /// </summary>
-    /// <param name="gameAsset"></param>
-    /// <param name="game"></param>
-    /// <returns></returns>
-    ///
-    public bool IsInKnownGameAsset(GameAsset gameAsset, Game game)
+    // Explicit IDLLManager implementation
+    bool IDLLManager.IsInKnownGameAsset(GameAsset gameAsset, GameLibrary gameLibrary, string titleBase64)
+        => IsInKnownGameAssetCore(gameAsset, gameLibrary.ToString(), titleBase64);
+
+    private bool IsInKnownGameAssetCore(GameAsset gameAsset, string gameLibraryName, string titleBase64)
     {
         // NOTE: DLL type
         // For each asset type first check if is in the DLSS Swapper manifest
@@ -840,9 +850,9 @@ internal class DLLManager
                 return false;
             }
 
-            if (hashedKnownDLL.Sources.TryGetValue(game.GameLibrary.ToString(), out var gameHashes) == true)
+            if (hashedKnownDLL.Sources.TryGetValue(gameLibraryName, out var gameHashes) == true)
             {
-                if (gameHashes.Contains(game.TitleBase64) == true)
+                if (gameHashes.Contains(titleBase64) == true)
                 {
                     return true;
                 }
@@ -873,9 +883,9 @@ internal class DLLManager
                 return false;
             }
 
-            if (hashedKnownDLL.Sources.TryGetValue(game.GameLibrary.ToString(), out var gameHashes) == true)
+            if (hashedKnownDLL.Sources.TryGetValue(gameLibraryName, out var gameHashes) == true)
             {
-                if (gameHashes.Contains(game.TitleBase64) == true)
+                if (gameHashes.Contains(titleBase64) == true)
                 {
                     return true;
                 }
@@ -906,9 +916,9 @@ internal class DLLManager
                 return false;
             }
 
-            if (hashedKnownDLL.Sources.TryGetValue(game.GameLibrary.ToString(), out var gameHashes) == true)
+            if (hashedKnownDLL.Sources.TryGetValue(gameLibraryName, out var gameHashes) == true)
             {
-                if (gameHashes.Contains(game.TitleBase64) == true)
+                if (gameHashes.Contains(titleBase64) == true)
                 {
                     return true;
                 }
@@ -938,9 +948,9 @@ internal class DLLManager
                 return false;
             }
 
-            if (hashedKnownDLL.Sources.TryGetValue(game.GameLibrary.ToString(), out var gameHashes) == true)
+            if (hashedKnownDLL.Sources.TryGetValue(gameLibraryName, out var gameHashes) == true)
             {
-                if (gameHashes.Contains(game.TitleBase64) == true)
+                if (gameHashes.Contains(titleBase64) == true)
                 {
                     return true;
                 }
@@ -970,9 +980,9 @@ internal class DLLManager
                 return false;
             }
 
-            if (hashedKnownDLL.Sources.TryGetValue(game.GameLibrary.ToString(), out var gameHashes) == true)
+            if (hashedKnownDLL.Sources.TryGetValue(gameLibraryName, out var gameHashes) == true)
             {
-                if (gameHashes.Contains(game.TitleBase64) == true)
+                if (gameHashes.Contains(titleBase64) == true)
                 {
                     return true;
                 }
@@ -1002,9 +1012,9 @@ internal class DLLManager
                 return false;
             }
 
-            if (hashedKnownDLL.Sources.TryGetValue(game.GameLibrary.ToString(), out var gameHashes) == true)
+            if (hashedKnownDLL.Sources.TryGetValue(gameLibraryName, out var gameHashes) == true)
             {
-                if (gameHashes.Contains(game.TitleBase64) == true)
+                if (gameHashes.Contains(titleBase64) == true)
                 {
                     return true;
                 }
@@ -1034,9 +1044,9 @@ internal class DLLManager
                 return false;
             }
 
-            if (hashedKnownDLL.Sources.TryGetValue(game.GameLibrary.ToString(), out var gameHashes) == true)
+            if (hashedKnownDLL.Sources.TryGetValue(gameLibraryName, out var gameHashes) == true)
             {
-                if (gameHashes.Contains(game.TitleBase64) == true)
+                if (gameHashes.Contains(titleBase64) == true)
                 {
                     return true;
                 }
@@ -1066,9 +1076,9 @@ internal class DLLManager
                 return false;
             }
 
-            if (hashedKnownDLL.Sources.TryGetValue(game.GameLibrary.ToString(), out var gameHashes) == true)
+            if (hashedKnownDLL.Sources.TryGetValue(gameLibraryName, out var gameHashes) == true)
             {
-                if (gameHashes.Contains(game.TitleBase64) == true)
+                if (gameHashes.Contains(titleBase64) == true)
                 {
                     return true;
                 }
@@ -1098,9 +1108,9 @@ internal class DLLManager
                 return false;
             }
 
-            if (hashedKnownDLL.Sources.TryGetValue(game.GameLibrary.ToString(), out var gameHashes) == true)
+            if (hashedKnownDLL.Sources.TryGetValue(gameLibraryName, out var gameHashes) == true)
             {
-                if (gameHashes.Contains(game.TitleBase64) == true)
+                if (gameHashes.Contains(titleBase64) == true)
                 {
                     return true;
                 }
@@ -1111,6 +1121,16 @@ internal class DLLManager
 
         return false;
     }
+
+    /// <summary>
+    /// Checks to see if the current GameAsset DLL is known to already existing DLL record known GameAsset for a game in a particular library
+    /// </summary>
+    /// <param name="gameAsset"></param>
+    /// <param name="game"></param>
+    /// <returns></returns>
+    ///
+    public bool IsInKnownGameAsset(GameAsset gameAsset, Game game)
+        => IsInKnownGameAssetCore(gameAsset, game.GameLibrary.ToString(), game.TitleBase64);
 
     /// <summary>
     /// 

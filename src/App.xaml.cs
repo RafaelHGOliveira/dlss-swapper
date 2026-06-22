@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.WinUI;
 using DLSS_Swapper.Helpers;
+using DLSS_Swapper.Platform.Windows;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 
@@ -38,7 +39,8 @@ public sealed partial class App : Application
     /// </summary>
     public App()
     {
-        Logger.Init();
+        Storage.Initialize(new WindowsStoragePathProvider());
+        Logger.Init(Path.Combine(Storage.GetTemp(), "logs"), Settings.Instance.LoggingLevel);
 
         HttpClient = GenerateNewHttpClient();
 

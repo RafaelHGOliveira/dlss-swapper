@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI.Collections;
+using DLSS_Swapper.Core.Data;
+using DLSS_Swapper.Core.Interfaces;
 using DLSS_Swapper.Data.BattleNet;
 using DLSS_Swapper.Data.Xbox;
 using DLSS_Swapper.Interfaces;
@@ -18,7 +20,7 @@ using Windows.System;
 
 namespace DLSS_Swapper.Data;
 
-internal partial class GameManager : ObservableObject
+internal partial class GameManager : ObservableObject, IGameManager
 {
     public static GameManager Instance { get; private set; } = new GameManager();
 
@@ -335,6 +337,14 @@ internal partial class GameManager : ObservableObject
             {
                 _allGames.Remove(game);
             });
+        }
+    }
+
+    void IGameManager.RemoveGame(GameBase game)
+    {
+        if (game is Game winGame)
+        {
+            RemoveGame(winGame);
         }
     }
 

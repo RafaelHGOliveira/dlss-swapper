@@ -12,6 +12,7 @@ using DLSS_Swapper.Data.ManuallyAdded;
 using DLSS_Swapper.Data.Steam;
 using DLSS_Swapper.Data.UbisoftConnect;
 using DLSS_Swapper.Data.Xbox;
+using DLSS_Swapper.Core.Interfaces;
 using Nito.AsyncEx;
 using SQLite;
 
@@ -25,13 +26,13 @@ public class SQLiteTableInfo
 }
 #endif
 
-internal class Database
+internal class Database : IDatabase
 {
     static Database? _instance;
     internal static Database Instance => _instance ??= new Database();
 
-    internal AsyncLock Mutex { get; init; }
-    internal SQLiteAsyncConnection Connection { get; init; }
+    public AsyncLock Mutex { get; init; }
+    public SQLiteAsyncConnection Connection { get; init; }
 
     public Database()
     {
