@@ -43,6 +43,9 @@ public sealed partial class App : Application
         Storage.Initialize(new WindowsStoragePathProvider());
         Logger.Init(Path.Combine(Storage.GetTemp(), "logs"), Settings.Instance.LoggingLevel);
 
+        // Ensure DLLManager's static ctor runs (sets DLLRecord delegates) before any DLLRecord is created.
+        _ = DLLManager.Instance;
+
         var steamPathProvider = new WindowsSteamPathProvider();
         var gameLibraryFactory = new WindowsGameFactory(steamPathProvider);
         GameManager.Initialize(gameLibraryFactory);
