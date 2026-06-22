@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
+using DLSS_Swapper.Data;
 using DLSS_Swapper.Interfaces;
 using SQLite;
 using Windows.Win32;
@@ -46,7 +47,7 @@ internal class EAAppGame : Game
 
     protected override async Task UpdateCacheImageAsync()
     {
-        var coverUrl = EAAppLibrary.Instance.SearchForCover(this);
+        var coverUrl = (GameManager.Instance.GetLibrary(GameLibrary.EAApp) as EAAppLibrary)?.SearchForCover(this) ?? string.Empty;
 
         if (string.IsNullOrWhiteSpace(coverUrl) == false)
         {

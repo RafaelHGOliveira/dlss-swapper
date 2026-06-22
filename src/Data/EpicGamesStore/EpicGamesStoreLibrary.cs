@@ -1,3 +1,4 @@
+using DLSS_Swapper.Core.Data;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,13 +19,10 @@ internal class EpicGamesStoreLibrary : IGameLibrary
 
     public Type GameType => typeof(EpicGamesStoreGame);
 
-    static EpicGamesStoreLibrary? instance;
-    public static EpicGamesStoreLibrary Instance => instance ??= new EpicGamesStoreLibrary();
-
     GameLibrarySettings? _gameLibrarySettings;
     public GameLibrarySettings? GameLibrarySettings => _gameLibrarySettings ??= GameManager.Instance.GetGameLibrarySettings(GameLibrary);
 
-    private EpicGamesStoreLibrary()
+    public EpicGamesStoreLibrary()
     {
 
     }
@@ -34,7 +32,7 @@ internal class EpicGamesStoreLibrary : IGameLibrary
         return string.IsNullOrEmpty(GetEpicRootDirectory()) == false;
     }
 
-    public async Task<List<Game>> ListGamesAsync(bool forceNeedsProcessing = false)
+    public async Task<IReadOnlyList<GameBase>> ListGamesAsync(bool forceNeedsProcessing = false)
     {
         var games = new List<Game>();
         var epicRootDirectory = GetEpicRootDirectory();

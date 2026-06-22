@@ -1,3 +1,4 @@
+using DLSS_Swapper.Core.Data;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -34,13 +35,10 @@ internal class UbisoftConnectLibrary : IGameLibrary
 
     public Type GameType => typeof(UbisoftConnectGame);
 
-    static UbisoftConnectLibrary? instance;
-    public static UbisoftConnectLibrary Instance => instance ??= new UbisoftConnectLibrary();
-
     GameLibrarySettings? _gameLibrarySettings;
     public GameLibrarySettings? GameLibrarySettings => _gameLibrarySettings ??= GameManager.Instance.GetGameLibrarySettings(GameLibrary);
 
-    private UbisoftConnectLibrary()
+    public UbisoftConnectLibrary()
     {
 
     }
@@ -53,7 +51,7 @@ internal class UbisoftConnectLibrary : IGameLibrary
     }
 
 
-    public async Task<List<Game>> ListGamesAsync(bool forceNeedsProcessing = false)
+    public async Task<IReadOnlyList<GameBase>> ListGamesAsync(bool forceNeedsProcessing = false)
     {
         var games = new List<Game>();
 

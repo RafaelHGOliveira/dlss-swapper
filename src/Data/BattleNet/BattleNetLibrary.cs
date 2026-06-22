@@ -1,3 +1,4 @@
+using DLSS_Swapper.Core.Data;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,9 +19,6 @@ internal partial class BattleNetLibrary : IGameLibrary
     public string Name => "Battle.net";
 
     public Type GameType => typeof(BattleNetGame);
-
-    static BattleNetLibrary? instance;
-    public static BattleNetLibrary Instance => instance ??= new BattleNetLibrary();
 
     GameLibrarySettings? _gameLibrarySettings;
     public GameLibrarySettings? GameLibrarySettings => _gameLibrarySettings ??= GameManager.Instance.GetGameLibrarySettings(GameLibrary);
@@ -95,7 +93,7 @@ internal partial class BattleNetLibrary : IGameLibrary
     private static partial Regex IgnoredGameIdRegex();
 
 
-    private BattleNetLibrary()
+    public BattleNetLibrary()
     {
         var allUsersProfile = Environment.GetEnvironmentVariable("ALLUSERSPROFILE");
         allUsersProfile ??= Environment.ExpandEnvironmentVariables("%ProgramData%");
@@ -131,7 +129,7 @@ internal partial class BattleNetLibrary : IGameLibrary
         return Directory.Exists(agentPath) && File.Exists(_productDbPath);
     }
 
-    public async Task<List<Game>> ListGamesAsync(bool forceNeedsProcessing)
+    public async Task<IReadOnlyList<GameBase>> ListGamesAsync(bool forceNeedsProcessing)
     {
         if (IsInstalled() == false)
         {

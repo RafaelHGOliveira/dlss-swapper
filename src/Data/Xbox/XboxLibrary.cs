@@ -1,3 +1,4 @@
+using DLSS_Swapper.Core.Data;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -20,13 +21,10 @@ internal class XboxLibrary : IGameLibrary
 
     public Type GameType => typeof(XboxGame);
 
-    static XboxLibrary? instance;
-    public static XboxLibrary Instance => instance ??= new XboxLibrary();
-
     GameLibrarySettings? _gameLibrarySettings;
     public GameLibrarySettings? GameLibrarySettings => _gameLibrarySettings ??= GameManager.Instance.GetGameLibrarySettings(GameLibrary);
 
-    private XboxLibrary()
+    public XboxLibrary()
     {
 
     }
@@ -40,7 +38,7 @@ internal class XboxLibrary : IGameLibrary
 
     readonly string[] _defaultHiddenGames = [];
 
-    public async Task<List<Game>> ListGamesAsync(bool forceNeedsProcessing = false)
+    public async Task<IReadOnlyList<GameBase>> ListGamesAsync(bool forceNeedsProcessing = false)
     {
         var games = new List<Game>();
 

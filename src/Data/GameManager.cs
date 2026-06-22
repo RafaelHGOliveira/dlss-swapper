@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI.Collections;
 using DLSS_Swapper.Core.Data;
 using DLSS_Swapper.Core.Interfaces;
+using DLSS_Swapper.Core.Platform;
 using DLSS_Swapper.Data.BattleNet;
 using DLSS_Swapper.Data.Xbox;
 using DLSS_Swapper.Interfaces;
@@ -22,7 +23,9 @@ namespace DLSS_Swapper.Data;
 
 internal partial class GameManager : ObservableObject, IGameManager
 {
-    public static GameManager Instance { get; private set; } = new GameManager();
+    public static GameManager Instance { get; private set; } = null!;
+
+    IGameLibraryFactory _factory;
 
     // Because access to _allGames should be done on the UI thread we have _synchronisedAllGames which
     // will be used for adding/removing/fetching games. _allGames gets updated which will then be reflected
@@ -103,8 +106,14 @@ internal partial class GameManager : ObservableObject, IGameManager
         };
     }
 
-    private GameManager()
+    public static void Initialize(IGameLibraryFactory factory)
     {
+        Instance = new GameManager(factory);
+    }
+
+    private GameManager(IGameLibraryFactory factory)
+    {
+        _factory = factory;
         FavouriteGamesView = new AdvancedCollectionView(_allGames, true);
         FavouriteGamesView.Filter = GetPredicateForFavouriteGames(Settings.Instance.HideNonDLSSGames);
         FavouriteGamesView.ObserveFilterProperty(nameof(ShowHiddenGames));
@@ -138,7 +147,8 @@ internal partial class GameManager : ObservableObject, IGameManager
 
         foreach (var gameLibraryEnum in GetGameLibraries(false))
         {
-            var gameLibrary = IGameLibrary.GetGameLibrary(gameLibraryEnum);
+            var gameLibrary = _factory.Get(gameLibraryEnum);
+            if (gameLibrary is null) continue;
 
             var gameView = new AdvancedCollectionView(_allGames, true);
             gameView.Filter = GetPredicateForLibraryGames(gameLibraryEnum, Settings.Instance.HideNonDLSSGames);
@@ -205,8 +215,8 @@ internal partial class GameManager : ObservableObject, IGameManager
 
         foreach (var gameLibraryEnum in GameManager.Instance.GetGameLibraries(true))
         {
-            var gameLibrary = IGameLibrary.GetGameLibrary(gameLibraryEnum);
-            if (gameLibrary.IsEnabled)
+            var gameLibrary = _factory.Get(gameLibraryEnum);
+            if (gameLibrary?.IsEnabled == true)
             {
                 await gameLibrary.LoadGamesFromCacheAsync().ConfigureAwait(false);
             }
@@ -215,7 +225,7 @@ internal partial class GameManager : ObservableObject, IGameManager
 
     public async Task LoadGamesAsync(bool forceNeedsProcessing = false)
     {
-        var tasks = new List<Task<List<Game>>>();
+        var tasks = new List<Task<IReadOnlyList<GameBase>>>();
         if (forceNeedsProcessing == true)
         {
             lock (unknownGameAsseetLock)
@@ -225,8 +235,8 @@ internal partial class GameManager : ObservableObject, IGameManager
         }
         foreach (var gameLibraryEnum in GameManager.Instance.GetGameLibraries(true))
         {
-            var gameLibrary = IGameLibrary.GetGameLibrary(gameLibraryEnum);
-            if (gameLibrary.IsEnabled)
+            var gameLibrary = _factory.Get(gameLibraryEnum);
+            if (gameLibrary?.IsEnabled == true)
             {
                 tasks.Add(gameLibrary.ListGamesAsync(forceNeedsProcessing));
             }
@@ -240,10 +250,12 @@ internal partial class GameManager : ObservableObject, IGameManager
 
             foreach (var game in completedTask.Result)
             {
-                AddGame(game);
+                AddGame((Game)game); // cast is safe: all Windows *Library impls return Game subtypes
             }
         }
     }
+
+    public IGameLibrary? GetLibrary(GameLibrary gameLibrary) => _factory.Get(gameLibrary);
 
     public ICollectionView GetGameCollection(string? filterText = null)
     {
@@ -531,9 +543,9 @@ internal partial class GameManager : ObservableObject, IGameManager
         }
         else if (game.GameLibrary == GameLibrary.BattleNet)
         {
-            if (game is BattleNetGame battleNetGame && File.Exists(BattleNetLibrary.Instance.ClientPath))
+            if (game is BattleNetGame battleNetGame && _factory.Get(GameLibrary.BattleNet) is BattleNetLibrary battleNetLibrary && File.Exists(battleNetLibrary.ClientPath))
             {
-                Process.Start(new ProcessStartInfo(BattleNetLibrary.Instance.ClientPath,  $"--exec=\"launch {battleNetGame.LauncherId}\"") { UseShellExecute = true });
+                Process.Start(new ProcessStartInfo(battleNetLibrary.ClientPath, $"--exec=\"launch {battleNetGame.LauncherId}\"") { UseShellExecute = true });
             }
         }
     }

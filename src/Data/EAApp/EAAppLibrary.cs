@@ -1,3 +1,4 @@
+using DLSS_Swapper.Core.Data;
 using System;
 using System.Collections.Frozen;
 using System.Collections.Generic;
@@ -15,9 +16,6 @@ namespace DLSS_Swapper.Data.EAApp;
 
 internal class EAAppLibrary : IGameLibrary
 {
-    static EAAppLibrary? instance;
-    public static EAAppLibrary Instance => instance ??= new EAAppLibrary();
-
     public GameLibrary GameLibrary => GameLibrary.EAApp;
 
     GameLibrarySettings? _gameLibrarySettings;
@@ -29,7 +27,7 @@ internal class EAAppLibrary : IGameLibrary
 
     readonly FrozenSet<GameSearchResult> _gameSearchResults = [];
 
-    private EAAppLibrary()
+    public EAAppLibrary()
     {
         // The best way to get covers from EA apps is a static list from the EAAppGameListBuilder tool.
         try
@@ -85,7 +83,7 @@ internal class EAAppLibrary : IGameLibrary
         }
     }
 
-    public async Task<List<Game>> ListGamesAsync(bool forceNeedsProcessing)
+    public async Task<IReadOnlyList<GameBase>> ListGamesAsync(bool forceNeedsProcessing)
     {
         if (IsInstalled() == false)
         {

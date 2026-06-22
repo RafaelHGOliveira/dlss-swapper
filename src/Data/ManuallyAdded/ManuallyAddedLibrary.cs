@@ -1,3 +1,4 @@
+using DLSS_Swapper.Core.Data;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,18 +16,15 @@ public class ManuallyAddedLibrary : IGameLibrary
     public Type GameType => typeof(ManuallyAddedGame);
 
 
-    static ManuallyAddedLibrary? instance;
-    public static ManuallyAddedLibrary Instance => instance ??= new ManuallyAddedLibrary();
-
     GameLibrarySettings? _gameLibrarySettings;
     public GameLibrarySettings? GameLibrarySettings => _gameLibrarySettings ??= GameManager.Instance.GetGameLibrarySettings(GameLibrary);
 
-    private ManuallyAddedLibrary()
+    public ManuallyAddedLibrary()
     {
 
     }
 
-    public async Task<List<Game>> ListGamesAsync(bool forceNeedsProcessing = false)
+    public async Task<IReadOnlyList<GameBase>> ListGamesAsync(bool forceNeedsProcessing = false)
     {
         List<Game> games = new List<Game>();
         List<ManuallyAddedGame> dbGames;

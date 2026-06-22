@@ -1,3 +1,4 @@
+using DLSS_Swapper.Core.Data;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,13 +22,10 @@ internal class GOGLibrary : IGameLibrary
 
     public Type GameType => typeof(GOGGame);
 
-    static GOGLibrary? instance;
-    public static GOGLibrary Instance => instance ??= new GOGLibrary();
-
     GameLibrarySettings? _gameLibrarySettings;
     public GameLibrarySettings? GameLibrarySettings => _gameLibrarySettings ??= GameManager.Instance.GetGameLibrarySettings(GameLibrary);
 
-    private GOGLibrary()
+    public GOGLibrary()
     {
 
     }
@@ -50,7 +48,7 @@ internal class GOGLibrary : IGameLibrary
         return false;
     }
 
-    public async Task<List<Game>> ListGamesAsync(bool forceNeedsProcessing = false)
+    public async Task<IReadOnlyList<GameBase>> ListGamesAsync(bool forceNeedsProcessing = false)
     {
         if (IsInstalled() == false)
         {

@@ -394,6 +394,11 @@ public class Settings : ISettings
 
     internal static ProxySettings ProxySettings { get; } = new ProxySettings();
 
+    public void SaveSettings()
+    {
+        SaveJson();
+    }
+
     internal void SaveJson()
     {
         SaveSettingsJson(this);

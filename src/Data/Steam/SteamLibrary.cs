@@ -1,7 +1,8 @@
+using DLSS_Swapper.Core.Data;
+using DLSS_Swapper.Core.Platform;
 using DLSS_Swapper.Data.Steam.Manifest;
 using DLSS_Swapper.Helpers;
 using DLSS_Swapper.Interfaces;
-using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,48 +20,43 @@ internal partial class SteamLibrary : IGameLibrary
 
     public Type GameType => typeof(SteamGame);
 
-    static SteamLibrary? instance;
-    public static SteamLibrary Instance => instance ??= new SteamLibrary();
-
     GameLibrarySettings? _gameLibrarySettings;
     public GameLibrarySettings? GameLibrarySettings => _gameLibrarySettings ??= GameManager.Instance.GetGameLibrarySettings(GameLibrary);
 
-    static string _installPath = string.Empty;
+    readonly ISteamPathProvider _steamPathProvider;
 
-    private SteamLibrary()
+    public SteamLibrary(ISteamPathProvider steamPathProvider)
     {
-
+        _steamPathProvider = steamPathProvider;
     }
 
     public bool IsInstalled()
     {
-        return string.IsNullOrEmpty(GetInstallPath()) == false;
+        return _steamPathProvider.GetSteamInstallPath() is not null;
     }
 
     readonly string[] _defaultHiddenGames = [
         "228980", // Steamworks Common Redistributables
 ];
 
-    public async Task<List<Game>> ListGamesAsync(bool forceNeedsProcessing = false)
+    public async Task<IReadOnlyList<GameBase>> ListGamesAsync(bool forceNeedsProcessing = false)
     {
-        // If we don't detect a steam install patg return an empty list.
-        if (IsInstalled() == false)
+        // If we don't detect a steam install path return an empty list.
+        var installPath = _steamPathProvider.GetSteamInstallPath();
+        if (installPath is null)
         {
             return new List<Game>();
         }
 
         var cachedGames = GameManager.Instance.GetGames<SteamGame>();
 
-        var installPath = GetInstallPath();
-
-
-        // I hope this runs on a background thread. 
+        // I hope this runs on a background thread.
         // Tasks are whack.
 
         // Base steamapps folder contains libraryfolders.vdf which has references to other steamapps folders and individual installed Steam games.
         // All of these folders contain appmanifest_[some_id].acf which contains information about the game.
 
-        var baseSteamAppsFolder = Path.Combine(installPath, "steamapps") ?? string.Empty;
+        var baseSteamAppsFolder = Path.Combine(installPath, "steamapps");
 
         // This should never happen, but it is a compiler hint for later.
         if (string.IsNullOrWhiteSpace(baseSteamAppsFolder))
@@ -262,43 +258,6 @@ internal partial class SteamLibrary : IGameLibrary
         }
 
         return games;
-    }
-
-    public static string GetInstallPath()
-    {
-        if (string.IsNullOrEmpty(_installPath) == false)
-        {
-            return _installPath;
-        }
-
-        try
-        {
-            using (var hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32))
-            {
-                using (var steamRegistryKey = hklm.OpenSubKey(@"SOFTWARE\Valve\Steam"))
-                {
-                    // if steamRegistryKey is null then Steam is not installed.
-                    if (steamRegistryKey is null)
-                    {
-                        return string.Empty;
-                    }
-
-                    var installPath = steamRegistryKey.GetValue("InstallPath") as string ?? string.Empty;
-                    if (string.IsNullOrEmpty(installPath) == false && Directory.Exists(installPath))
-                    {
-                        _installPath = installPath;
-                    }
-
-                    return _installPath;
-                }
-            }
-        }
-        catch (Exception err)
-        {
-            _installPath = string.Empty;
-            Logger.Error(err);
-            return string.Empty;
-        }
     }
 
     public async Task LoadGamesFromCacheAsync()

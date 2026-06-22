@@ -18,7 +18,8 @@ internal partial class GameLibrarySelectorControlModel : ObservableObject
         var gameLibraryEnumList = GameManager.Instance.GetGameLibraries(false);
         foreach (var gameLibraryEnum in gameLibraryEnumList)
         {
-            var gameLibrary = IGameLibrary.GetGameLibrary(gameLibraryEnum);
+            var gameLibrary = GameManager.Instance.GetLibrary(gameLibraryEnum);
+            if (gameLibrary is null) continue;
             GameLibraries.Add(new GameLibrarySelector(gameLibrary));
         }
 

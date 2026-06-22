@@ -4,4 +4,5 @@ public interface ISettings
 {
     bool AllowUntrusted { get; }
     string[] IgnoredPaths { get; }
+    void SaveSettings();
 }

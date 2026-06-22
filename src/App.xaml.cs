@@ -9,6 +9,7 @@ using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.WinUI;
+using DLSS_Swapper.Data;
 using DLSS_Swapper.Helpers;
 using DLSS_Swapper.Platform.Windows;
 using Microsoft.UI.Dispatching;
@@ -41,6 +42,10 @@ public sealed partial class App : Application
     {
         Storage.Initialize(new WindowsStoragePathProvider());
         Logger.Init(Path.Combine(Storage.GetTemp(), "logs"), Settings.Instance.LoggingLevel);
+
+        var steamPathProvider = new WindowsSteamPathProvider();
+        var gameLibraryFactory = new WindowsGameFactory(steamPathProvider);
+        GameManager.Initialize(gameLibraryFactory);
 
         HttpClient = GenerateNewHttpClient();
 

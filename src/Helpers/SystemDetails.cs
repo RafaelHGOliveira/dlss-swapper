@@ -94,7 +94,8 @@ internal class SystemDetails
         {
             foreach (var gameLibraryEnum in GameManager.Instance.GetGameLibraries(false))
             {
-                var gameLibrary = IGameLibrary.GetGameLibrary(gameLibraryEnum);
+                var gameLibrary = GameManager.Instance.GetLibrary(gameLibraryEnum);
+                if (gameLibrary is null) continue;
                 stringBuilder.AppendLine(gameLibrary.Name);
                 stringBuilder.AppendLine(CultureInfo.InvariantCulture, $"Status: {(gameLibrary.IsEnabled ? "Enabled" : "Disabled")}");
                 if (gameLibrary.IsEnabled)
