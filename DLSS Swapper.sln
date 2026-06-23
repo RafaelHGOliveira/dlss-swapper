@@ -13,6 +13,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AB3BF05
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DLSS.Swapper.Core.Tests", "tests\DLSS.Swapper.Core.Tests\DLSS.Swapper.Core.Tests.csproj", "{AD8614FB-1025-4117-918A-D85B40627077}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src-linux", "src-linux", "{45438A2C-D3D2-648E-3B36-6E869EE2D565}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DLSS.Swapper.Linux", "src-linux\DLSS.Swapper.Linux.csproj", "{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -101,6 +105,30 @@ Global
 		{AD8614FB-1025-4117-918A-D85B40627077}.Release_Portable|Any CPU.Build.0 = Debug|Any CPU
 		{AD8614FB-1025-4117-918A-D85B40627077}.Release_Portable|x86.ActiveCfg = Debug|Any CPU
 		{AD8614FB-1025-4117-918A-D85B40627077}.Release_Portable|x86.Build.0 = Debug|Any CPU
+		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}.Debug|x64.Build.0 = Debug|Any CPU
+		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}.Debug|x86.Build.0 = Debug|Any CPU
+		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}.Debug_Portable|x64.ActiveCfg = Debug|Any CPU
+		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}.Debug_Portable|x64.Build.0 = Debug|Any CPU
+		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}.Debug_Portable|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}.Debug_Portable|Any CPU.Build.0 = Debug|Any CPU
+		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}.Debug_Portable|x86.ActiveCfg = Debug|Any CPU
+		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}.Debug_Portable|x86.Build.0 = Debug|Any CPU
+		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}.Release|x64.ActiveCfg = Release|Any CPU
+		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}.Release|x64.Build.0 = Release|Any CPU
+		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}.Release|x86.ActiveCfg = Release|Any CPU
+		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}.Release|x86.Build.0 = Release|Any CPU
+		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}.Release_Portable|x64.ActiveCfg = Debug|Any CPU
+		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}.Release_Portable|x64.Build.0 = Debug|Any CPU
+		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}.Release_Portable|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}.Release_Portable|Any CPU.Build.0 = Debug|Any CPU
+		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}.Release_Portable|x86.ActiveCfg = Debug|Any CPU
+		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}.Release_Portable|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -108,6 +136,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{C9FD2AC4-B28D-4100-8FF5-5DCE8B45956A} = {20B3D188-1D40-B6DB-5EFF-20E1C75EFE6A}
 		{AD8614FB-1025-4117-918A-D85B40627077} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
+		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED} = {45438A2C-D3D2-648E-3B36-6E869EE2D565}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F184BD5E-34A3-4A6C-BB68-09DAC5BD2093}

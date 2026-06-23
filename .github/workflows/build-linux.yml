@@ -1,0 +1,41 @@
+name: Build DLSS Swapper Linux
+
+on:
+  push:
+    tags:
+      - v1.*
+      - v2.*
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10.0
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Display .NET info
+        run: dotnet --info
+
+      - name: Build DLSS Swapper Linux
+        run: dotnet build src-linux/DLSS.Swapper.Linux.csproj -c Release
+
+      - name: Run Core tests
+        run: dotnet test tests/DLSS.Swapper.Core.Tests/
+
+      - name: Build AppImage
+        run: bash src-linux/AppImage/build.sh
+
+      - name: Upload AppImage artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: DLSS-Swapper-Linux
+          path: DLSS-Swapper-x86_64.AppImage
+          if-no-files-found: warn

@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../../src-core/DLSS.Swapper.Core.csproj" />
+    <ProjectReference Include="../../src-linux/DLSS.Swapper.Linux.csproj" />
   </ItemGroup>
 
 </Project>

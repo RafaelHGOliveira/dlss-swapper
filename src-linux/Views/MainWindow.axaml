@@ -1,0 +1,7 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="DLSS_Swapper.Linux.Views.MainWindow"
+        Title="DLSS Swapper"
+        Width="1024" Height="768">
+    <TextBlock Text="DLSS Swapper" HorizontalAlignment="Center" VerticalAlignment="Center" />
+</Window>
