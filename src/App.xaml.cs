@@ -52,6 +52,10 @@ public sealed partial class App : Application
 
         HttpClient = GenerateNewHttpClient();
 
+        // Wire additional GameBase static service refs used by Core game types (e.g. SteamGame)
+        DLSS_Swapper.Core.Data.GameBase.HttpClientService = HttpClient;
+        DLSS_Swapper.Core.Data.GameBase.SteamPathService = steamPathProvider;
+
         var language = Settings.Instance.Language;
 
         // Language is not set, try to fetch from system.

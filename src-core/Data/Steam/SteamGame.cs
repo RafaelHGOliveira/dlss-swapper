@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Web;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DLSS_Swapper.Core;
+using DLSS_Swapper.Core.Data;
 using DLSS_Swapper.Data.Steam.SteamAPI;
 using DLSS_Swapper.Interfaces;
 using SQLite;
@@ -13,7 +14,7 @@ using SQLite;
 namespace DLSS_Swapper.Data.Steam;
 
 [Table("steam_game")]
-internal partial class SteamGame : Game
+public partial class SteamGame : GameBase
 {
     public override GameLibrary GameLibrary => GameLibrary.Steam;
 
@@ -45,21 +46,25 @@ internal partial class SteamGame : Game
     protected override async Task UpdateCacheImageAsync()
     {
         // Try get image from the local disk first.
-        var localHeaderImagePath = Path.Combine(SteamLibrary.GetInstallPath(), "appcache", "librarycache", $"{PlatformId}_library_600x900.jpg");
-        if (File.Exists(localHeaderImagePath))
+        var steamInstallPath = GameBase.SteamPathService?.GetSteamInstallPath();
+        if (!string.IsNullOrEmpty(steamInstallPath))
         {
-            using (var fileStream = File.Open(localHeaderImagePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            var localHeaderImagePath = Path.Combine(steamInstallPath, "appcache", "librarycache", $"{PlatformId}_library_600x900.jpg");
+            if (File.Exists(localHeaderImagePath))
             {
-                await ResizeCoverAsync(fileStream).ConfigureAwait(false);
+                using (var fileStream = File.Open(localHeaderImagePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    await ResizeCoverAsync(fileStream).ConfigureAwait(false);
+                }
+                return;
             }
-            return;
         }
 
-        // Special case for Steamworks redistributable. 
+        // Special case for Steamworks redistributable.
         if (PlatformId == "228980")
         {
             await DownloadCoverAsync($"https://steamcdn-a.akamaihd.net/steam/apps/{PlatformId}/header.jpg").ConfigureAwait(false);
-            return;            
+            return;
         }
 
         // Try download via IStoreBrowseService first.
@@ -78,6 +83,12 @@ internal partial class SteamGame : Game
 
     async Task<bool> DownloadCoverFromIStoreBrowseService()
     {
+        if (GameBase.HttpClientService is null)
+        {
+            Logger.Error("HttpClientService not configured");
+            return false;
+        }
+
         try
         {
             var getItemsInput = new GetItemsInput();
@@ -87,7 +98,7 @@ internal partial class SteamGame : Game
             var jsonPayload = JsonSerializer.Serialize(getItemsInput, CoreSourceGenerationContext.Default.GetItemsInput);
             var payloadUrlEncoded = HttpUtility.UrlEncode(jsonPayload);
 
-            using (var steamApiResponse = await App.CurrentApp.HttpClient.GetAsync($"https://api.steampowered.com/IStoreBrowseService/GetItems/v1/?input_json={payloadUrlEncoded}", System.Net.Http.HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false))
+            using (var steamApiResponse = await GameBase.HttpClientService.GetAsync($"https://api.steampowered.com/IStoreBrowseService/GetItems/v1/?input_json={payloadUrlEncoded}", System.Net.Http.HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false))
             {
                 if (steamApiResponse.IsSuccessStatusCode == false)
                 {
@@ -155,9 +166,9 @@ internal partial class SteamGame : Game
         return false;
     }
 
-    public override bool UpdateFromGame(Game game)
+    public bool UpdateFromGame(GameBase game)
     {
-        var didChange = ParentUpdateFromGame(game);
+        var didChange = ParentUpdateFromGameBase(game);
 
         if (game is SteamGame steamGame)
         {

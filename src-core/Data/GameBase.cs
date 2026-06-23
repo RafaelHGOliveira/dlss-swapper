@@ -25,6 +25,8 @@ public abstract partial class GameBase : ObservableObject
     public static IDLLManager? DllManagerService;
     public static IGameManager? GameManagerService;
     public static ISettings? SettingsService;
+    public static System.Net.Http.HttpClient? HttpClientService;
+    public static DLSS_Swapper.Core.Platform.ISteamPathProvider? SteamPathService;
 
     // -----------------------------------------------------------------------
     // Platform hooks — overridden by WindowsGame
