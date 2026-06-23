@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace DLSS_Swapper.Data;
 
-internal class Manifest
+public class Manifest
 {
     [JsonPropertyName("dlss")]
     public List<DLLRecord> DLSS { get; set; } = new List<DLLRecord>();
