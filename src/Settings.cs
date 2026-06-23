@@ -468,11 +468,14 @@ public class Settings : ISettings
 
     /// <summary>
     /// Checks game libraries to see if there are any new ones to be added, or misconfigured settings.
+    /// Only libraries present in <paramref name="supportedLibraries"/> are considered; pass null to include all.
     /// </summary>
     /// <returns></returns>
-    private bool CheckGameLibraries()
+    private bool CheckGameLibraries(IReadOnlyList<GameLibrary>? supportedLibraries = null)
     {
-        var gameLibraries = Enum.GetValues<GameLibrary>().ToList();
+        var gameLibraries = (supportedLibraries is not null
+            ? supportedLibraries.ToList()
+            : Enum.GetValues<GameLibrary>().ToList());
 
         // Move manually added to the end of the list by default.
         gameLibraries.Remove(GameLibrary.ManuallyAdded);

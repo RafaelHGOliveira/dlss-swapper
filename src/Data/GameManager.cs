@@ -195,7 +195,8 @@ internal partial class GameManager : ObservableObject, IGameManager
             // Add each of the items in the order that is from settings.
             foreach (var gameLibrarySetting in Settings.Instance.GameLibrarySettings)
             {
-                var groupedItem = groupedGameLibraryList.Single(x => x.GameLibrary == gameLibrarySetting.GameLibrary);
+                var groupedItem = groupedGameLibraryList.SingleOrDefault(x => x.GameLibrary == gameLibrarySetting.GameLibrary);
+                if (groupedItem is null) continue;
                 groupedList.Add(groupedItem);
                 groupedGameLibraryList.Remove(groupedItem);
             }
@@ -466,10 +467,16 @@ internal partial class GameManager : ObservableObject, IGameManager
 
     public List<GameLibrary> GetGameLibraries(bool onlyEnabled)
     {
+        var supported = GameLibraryScope.SupportedLibraries(_factory);
         var gameLibrariesToReturn = new List<GameLibrary>();
 
         foreach (var gameLibrarySetting in Settings.Instance.GameLibrarySettings)
         {
+            if (!supported.Contains(gameLibrarySetting.GameLibrary))
+            {
+                continue;
+            }
+
             if (gameLibrarySetting.IsEnabled == false && onlyEnabled == true)
             {
                 continue;
