@@ -1,3 +1,4 @@
+using DLSS_Swapper.Core.Interfaces;
 using DLSS_Swapper.Core.Platform;
 using DLSS_Swapper.Data.BattleNet;
 using DLSS_Swapper.Data.EAApp;
@@ -16,12 +17,14 @@ namespace DLSS_Swapper.Platform.Windows;
 public sealed class WindowsGameFactory : IGameLibraryFactory
 {
     readonly Dictionary<GameLibrary, IGameLibrary> _libraries;
+    readonly SteamLibrary _steamLibrary;
 
-    public WindowsGameFactory(ISteamPathProvider steamPathProvider)
+    public WindowsGameFactory(ISteamPathProvider steamPathProvider, IGameManager gameManager)
     {
+        _steamLibrary = new SteamLibrary(steamPathProvider, gameManager);
         _libraries = new()
         {
-            [GameLibrary.Steam] = new SteamLibrary(steamPathProvider),
+            [GameLibrary.Steam] = _steamLibrary,
             [GameLibrary.GOG] = new GOGLibrary(),
             [GameLibrary.EpicGamesStore] = new EpicGamesStoreLibrary(),
             [GameLibrary.UbisoftConnect] = new UbisoftConnectLibrary(),
@@ -31,6 +34,11 @@ public sealed class WindowsGameFactory : IGameLibraryFactory
             [GameLibrary.ManuallyAdded] = new ManuallyAddedLibrary(),
         };
     }
+
+    /// <summary>
+    /// Called after GameManager.Initialize to wire the real IGameManager into SteamLibrary.
+    /// </summary>
+    public void SetGameManager(IGameManager gameManager) => _steamLibrary.SetGameManager(gameManager);
 
     public IReadOnlyList<IGameLibrary> CreateEnabledLibraries() => _libraries.Values.ToList();
 

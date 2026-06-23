@@ -47,8 +47,11 @@ public sealed partial class App : Application
         _ = DLLManager.Instance;
 
         var steamPathProvider = new WindowsSteamPathProvider();
-        var gameLibraryFactory = new WindowsGameFactory(steamPathProvider);
+        // Phase 1: build factory with null placeholder (GameManager ctor only reads .Name/.GameLibrary from libs)
+        var gameLibraryFactory = new WindowsGameFactory(steamPathProvider, null!);
         GameManager.Initialize(gameLibraryFactory);
+        // Phase 2: wire real IGameManager into SteamLibrary now that GameManager.Instance exists
+        gameLibraryFactory.SetGameManager(GameManager.Instance);
 
         HttpClient = GenerateNewHttpClient();
 

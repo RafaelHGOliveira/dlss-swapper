@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace DLSS_Swapper.Core.Data;
 
-public abstract partial class GameBase : ObservableObject
+public abstract partial class GameBase : ObservableObject, IComparable<GameBase>
 {
     // Static service refs — set by src/ platform at startup (same pattern as DLLRecord)
     public static IDatabase? DatabaseService;
@@ -222,6 +222,17 @@ public abstract partial class GameBase : ObservableObject
             GameLibrary.EAApp => $"eaapp_{platformId}",
             _ => throw new Exception($"Unknown GameLibrary {GameLibrary} while setting ID"),
         };
+    }
+
+    // -----------------------------------------------------------------------
+    // IComparable<GameBase>
+    // -----------------------------------------------------------------------
+
+    public int CompareTo(GameBase? other)
+    {
+        if (other is null)
+            return -1;
+        return string.Compare(Title, other.Title, StringComparison.OrdinalIgnoreCase);
     }
 
     // -----------------------------------------------------------------------
