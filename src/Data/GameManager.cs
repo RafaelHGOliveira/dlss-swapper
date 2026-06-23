@@ -250,7 +250,7 @@ internal partial class GameManager : ObservableObject, IGameManager
 
             foreach (var game in completedTask.Result)
             {
-                AddGame((Game)game); // cast is safe: all Windows *Library impls return Game subtypes
+                AddGame(game);
             }
         }
     }
@@ -300,41 +300,43 @@ internal partial class GameManager : ObservableObject, IGameManager
 
 
 
-    public Game AddGame(Game game, bool scrollIntoView = false)
+    public GameBase AddGame(GameBase game, bool scrollIntoView = false)
     {
+        // All Windows game library implementations produce Game subtypes; the cast is always safe here.
+        var winGame = (Game)game;
         lock (gameLock)
         {
-            if (_synchronisedAllGames.Contains(game) == true)
+            if (_synchronisedAllGames.Contains(winGame) == true)
             {
                 // This probably checks the game collection twice looking for the game.
                 // We could do away with this, but in theory this if is never hit
-                var oldGame = _synchronisedAllGames.First(x => x.Equals(game));
+                var oldGame = _synchronisedAllGames.First(x => x.Equals(winGame));
 
                 App.CurrentApp.RunOnUIThread(() =>
                 {
-                    oldGame.UpdateFromGame(game);
+                    oldGame.UpdateFromGame(winGame);
                 });
 
-                Debug.WriteLine($"Reusing old game: {game.Title}");
+                Debug.WriteLine($"Reusing old game: {winGame.Title}");
                 return oldGame;
             }
             else
             {
-                Debug.WriteLine($"Adding new game: {game.Title}");
+                Debug.WriteLine($"Adding new game: {winGame.Title}");
 
-                _synchronisedAllGames.Add(game);
+                _synchronisedAllGames.Add(winGame);
 
                 App.CurrentApp.RunOnUIThread(() =>
                 {
-                    _allGames.Add(game);
+                    _allGames.Add(winGame);
 
                     if (scrollIntoView)
                     {
-                        App.CurrentApp.MainWindow.GameGridPage?.ScrollToGame(game);
+                        App.CurrentApp.MainWindow.GameGridPage?.ScrollToGame(winGame);
                     }
                 });
 
-                return game;
+                return winGame;
             }
         }
     }
@@ -374,7 +376,7 @@ internal partial class GameManager : ObservableObject, IGameManager
         }
     }
 
-    public TGame? GetGame<TGame>(string platformId) where TGame : Game
+    public TGame? GetGame<TGame>(string platformId) where TGame : GameBase
     {
         lock (gameLock)
         {
@@ -393,7 +395,7 @@ internal partial class GameManager : ObservableObject, IGameManager
         return null;
     }
 
-    public List<TGame> GetGames<TGame>() where TGame : Game
+    public List<TGame> GetGames<TGame>() where TGame : GameBase
     {
         lock (gameLock)
         {
