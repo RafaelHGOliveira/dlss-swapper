@@ -44,6 +44,7 @@ public partial class MainWindowViewModel : ObservableObject
             foreach (var library in _factory.CreateEnabledLibraries())
             {
                 if (!library.IsInstalled()) continue;
+                await library.LoadGamesFromCacheAsync();
                 var games = await library.ListGamesAsync(forceNeedsProcessing: false);
                 foreach (var game in games)
                     Games.Add(game);
