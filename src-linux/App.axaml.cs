@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Net.Http;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -25,6 +26,7 @@ public partial class App : Application
             {
                 var storageProvider = new LinuxStoragePathProvider();
                 Storage.Initialize(storageProvider);
+                Logger.Init(Path.Combine(Storage.GetTemp(), "logs"), LoggingLevel.Info);
 
                 var database = new LinuxDatabase();
                 await database.InitializeAsync();

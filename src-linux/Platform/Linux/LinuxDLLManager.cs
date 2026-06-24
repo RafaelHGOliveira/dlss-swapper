@@ -45,9 +45,11 @@ public sealed class LinuxDLLManager : IDLLManager
 
     static void HandleExtractFromZip(ZipArchive zipArchive, DLLRecord record)
     {
+        if (record.LocalRecord is null)
+            throw new Exception("LocalRecord was null when attempting to extract dll from zip.");
         var dllName = DLLPaths.DllNameForGameAssetType(record.AssetType);
         var entry = zipArchive.Entries.Single(e => e.Name.Equals(dllName, StringComparison.OrdinalIgnoreCase));
-        Storage.CreateDirectoryForFileIfNotExists(record.LocalRecord!.ExpectedPath);
+        Storage.CreateDirectoryForFileIfNotExists(record.LocalRecord.ExpectedPath);
         entry.ExtractToFile(record.LocalRecord.ExpectedPath, overwrite: true);
     }
 
