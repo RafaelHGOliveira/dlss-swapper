@@ -18,7 +18,7 @@ public partial class App : Application
         AvaloniaXamlLoader.Load(this);
     }
 
-    public override async void OnFrameworkInitializationCompleted()
+    public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
@@ -28,10 +28,8 @@ public partial class App : Application
                 Storage.Initialize(storageProvider);
                 Logger.Init(Path.Combine(Storage.GetTemp(), "logs"), LoggingLevel.Info);
 
-                var database = new LinuxDatabase();
-                await database.InitializeAsync();
-
                 var httpClient = new HttpClient();
+                var database = new LinuxDatabase();
                 var dllManager = new LinuxDLLManager(httpClient);
                 var settings = new LinuxSettings();
                 var gameManager = new LinuxGameManager();
@@ -46,20 +44,35 @@ public partial class App : Application
                 GameBase.SteamPathService = steamProvider;
 
                 desktop.MainWindow = new MainWindow(gameFactory, dllManager);
-                _ = dllManager.LoadManifestAsync();
+                base.OnFrameworkInitializationCompleted();
+
+                // DB table creation and manifest fetch run after the window is shown
+                _ = InitializeAsync(database, dllManager);
             }
             catch (Exception ex)
             {
+                Console.Error.WriteLine($"Startup failed: {ex}");
                 Logger.Error(ex, "Startup failed");
-            }
-            finally
-            {
                 base.OnFrameworkInitializationCompleted();
             }
         }
         else
         {
             base.OnFrameworkInitializationCompleted();
+        }
+    }
+
+    private static async System.Threading.Tasks.Task InitializeAsync(LinuxDatabase database, LinuxDLLManager dllManager)
+    {
+        try
+        {
+            await database.InitializeAsync().ConfigureAwait(false);
+            await dllManager.LoadManifestAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Async init failed: {ex}");
+            Logger.Error(ex, "Async init failed");
         }
     }
 }
