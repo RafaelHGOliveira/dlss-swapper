@@ -1,6 +1,45 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="DLSS_Swapper.Linux.Views.SwapDialog"
-        Title="Manage DLLs" Width="600" Height="400">
-    <TextBlock Text="(Swap dialog — Task 5)" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        Title="Manage DLLs"
+        Width="600" Height="500">
+    <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Margin="8" FontWeight="Bold" Text="{Binding GameTitle}"/>
+        <TextBlock DockPanel.Dock="Top"
+                   Margin="8"
+                   Text="No managed DLLs detected for this game."
+                   IsVisible="{Binding HasNoTabs}"/>
+        <TabControl ItemsSource="{Binding Tabs}" IsVisible="{Binding !HasNoTabs}">
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding AssetTypeName}"/>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <StackPanel Margin="8" Spacing="8">
+                        <TextBlock Text="Current version:"/>
+                        <TextBlock Margin="8,0,0,0" Text="{Binding CurrentAsset.Version, FallbackValue='Not detected'}"/>
+                        <TextBlock Text="Available versions:"/>
+                        <ListBox ItemsSource="{Binding AvailableVersions}"
+                                 SelectedItem="{Binding SelectedRecord}"
+                                 Height="160">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding DisplayVersion}"/>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Button Content="Download" Command="{Binding DownloadCommand}"/>
+                            <Button Content="Swap" Command="{Binding SwapCommand}"/>
+                            <Button Content="Restore" Command="{Binding RestoreCommand}"/>
+                        </StackPanel>
+                        <TextBlock Text="{Binding OperationMessage}"/>
+                        <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsDownloading}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
+    </DockPanel>
 </Window>
