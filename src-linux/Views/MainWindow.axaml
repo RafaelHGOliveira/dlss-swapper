@@ -23,7 +23,7 @@
             </ListBox>
             <!-- Game List -->
             <Grid Grid.Column="1">
-                <TextBlock Text="No games found." IsVisible="{Binding !Games.Count}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="No games found." IsVisible="{Binding HasNoGames}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 <ListBox ItemsSource="{Binding Games}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>

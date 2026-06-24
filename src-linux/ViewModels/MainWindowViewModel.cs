@@ -21,6 +21,7 @@ public partial class MainWindowViewModel : ObservableObject
     string _statusMessage = string.Empty;
 
     public ObservableCollection<GameBase> Games { get; } = new();
+    public bool HasNoGames => Games.Count == 0;
     public AsyncRelayCommand LoadGamesCommand { get; }
     public RelayCommand<GameBase> OpenSwapDialogCommand { get; }
 
@@ -28,6 +29,7 @@ public partial class MainWindowViewModel : ObservableObject
     {
         _factory = factory;
         _dllManager = dllManager;
+        Games.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasNoGames));
         LoadGamesCommand = new AsyncRelayCommand(LoadGamesAsync);
         OpenSwapDialogCommand = new RelayCommand<GameBase>(OpenSwapDialog);
     }
@@ -37,15 +39,21 @@ public partial class MainWindowViewModel : ObservableObject
         IsLoading = true;
         StatusMessage = "Scanning games...";
         Games.Clear();
-        foreach (var library in _factory.CreateEnabledLibraries())
+        try
         {
-            if (!library.IsInstalled()) continue;
-            var games = await library.ListGamesAsync(forceNeedsProcessing: false);
-            foreach (var game in games)
-                Games.Add(game);
+            foreach (var library in _factory.CreateEnabledLibraries())
+            {
+                if (!library.IsInstalled()) continue;
+                var games = await library.ListGamesAsync(forceNeedsProcessing: false);
+                foreach (var game in games)
+                    Games.Add(game);
+            }
+            StatusMessage = $"{Games.Count} game(s) found.";
         }
-        StatusMessage = $"{Games.Count} game(s) found.";
-        IsLoading = false;
+        finally
+        {
+            IsLoading = false;
+        }
     }
 
     void OpenSwapDialog(GameBase? game)
