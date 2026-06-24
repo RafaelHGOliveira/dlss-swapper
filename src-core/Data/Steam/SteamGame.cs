@@ -76,7 +76,13 @@ public partial class SteamGame : GameBase
 
             if (didDownload == false)
             {
-                Logger.Error($"Tried to get Steam cover for {PlatformId} but was unable to get it from both old and new Steam CDNs.");
+                // Last resort: header.jpg is available for tools and redistributables that have no store page
+                didDownload = await DownloadCoverAsync($"https://steamcdn-a.akamaihd.net/steam/apps/{PlatformId}/header.jpg").ConfigureAwait(false);
+            }
+
+            if (didDownload == false)
+            {
+                Logger.Error($"Tried to get Steam cover for {PlatformId} but was unable to get it from all known Steam CDNs.");
             }
         }
     }
