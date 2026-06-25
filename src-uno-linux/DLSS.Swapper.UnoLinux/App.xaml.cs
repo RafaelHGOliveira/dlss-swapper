@@ -1,6 +1,12 @@
 using System;
+using System.IO;
+using System.Net.Http;
 using Microsoft.Extensions.Logging;
 using Uno.Resizetizer;
+using DLSS_Swapper;
+using DLSS_Swapper.Core.Data;
+using DLSS_Swapper.Core.Platform;
+using DLSS_Swapper.Linux.Platform.Linux;
 
 namespace DLSS.Swapper.UnoLinux;
 
@@ -17,8 +23,33 @@ public partial class App : Application
 
     protected Window? MainWindow { get; private set; }
 
+    public IGameLibraryFactory GameFactory { get; private set; } = null!;
+    public LinuxDLLManager DllManager { get; private set; } = null!;
+
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
+        var storageProvider = new LinuxStoragePathProvider();
+        Storage.Initialize(storageProvider);
+        Logger.Init(Path.Combine(Storage.GetTemp(), "logs"), LoggingLevel.Info);
+
+        var httpClient = new HttpClient();
+        var database = new LinuxDatabase();
+        var dllManager = new LinuxDLLManager(httpClient);
+        var settings = new LinuxSettings();
+        var gameManager = new LinuxGameManager();
+        var steamProvider = new LinuxSteamPathProvider();
+        var gameFactory = new LinuxGameFactory(steamProvider, gameManager);
+
+        GameBase.DatabaseService = database;
+        GameBase.DllManagerService = dllManager;
+        GameBase.SettingsService = settings;
+        GameBase.GameManagerService = gameManager;
+        GameBase.HttpClientService = httpClient;
+        GameBase.SteamPathService = steamProvider;
+
+        GameFactory = gameFactory;
+        DllManager = dllManager;
+
         MainWindow = new Window();
 #if DEBUG
         MainWindow.UseStudio();
@@ -49,6 +80,8 @@ public partial class App : Application
         MainWindow.SetWindowIcon();
         // Ensure the current window is active
         MainWindow.Activate();
+
+        _ = InitializeAsync(database, dllManager);
     }
 
     /// <summary>
@@ -59,6 +92,19 @@ public partial class App : Application
     void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
     {
         throw new InvalidOperationException($"Failed to load {e.SourcePageType.FullName}: {e.Exception}");
+    }
+
+    private static async System.Threading.Tasks.Task InitializeAsync(LinuxDatabase database, LinuxDLLManager dllManager)
+    {
+        try
+        {
+            await database.InitializeAsync().ConfigureAwait(false);
+            await dllManager.LoadManifestAsync().ConfigureAwait(false);
+        }
+        catch (System.Exception ex)
+        {
+            Logger.Error(ex, "Async init failed");
+        }
     }
 
     /// <summary>

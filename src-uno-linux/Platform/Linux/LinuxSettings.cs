@@ -1,4 +1,4 @@
-using DLSS_Swapper.Core.Interfaces;
+using ISettings = DLSS_Swapper.Core.Interfaces.ISettings;
 
 namespace DLSS_Swapper.Linux.Platform.Linux;
 
