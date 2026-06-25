@@ -11,7 +11,8 @@
         <muxc:NavigationView.MenuItems>
             <muxc:NavigationViewItem Content="Games" IsSelected="True">
                 <muxc:NavigationViewItem.Icon>
-                    <FontIcon Glyph="&#xE7FC;"/>
+                    <FontIcon Glyph="&#xE7FC;"
+                              FontFamily="{StaticResource SymbolThemeFontFamily}"/>
                 </muxc:NavigationViewItem.Icon>
             </muxc:NavigationViewItem>
         </muxc:NavigationView.MenuItems>
