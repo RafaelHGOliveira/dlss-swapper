@@ -21,7 +21,7 @@ public partial class App : Application
         this.InitializeComponent();
     }
 
-    protected Window? MainWindow { get; private set; }
+    protected Window? _mainWindow;
 
     public IGameLibraryFactory GameFactory { get; private set; } = null!;
     public LinuxDLLManager DllManager { get; private set; } = null!;
@@ -50,48 +50,16 @@ public partial class App : Application
         GameFactory = gameFactory;
         DllManager = dllManager;
 
-        MainWindow = new Window();
+        _mainWindow = new MainWindow();
 #if DEBUG
-        MainWindow.UseStudio();
+        _mainWindow.UseStudio();
 #endif
 
-
-        // Do not repeat app initialization when the Window already has content,
-        // just ensure that the window is active
-        if (MainWindow.Content is not Frame rootFrame)
-        {
-            // Create a Frame to act as the navigation context and navigate to the first page
-            rootFrame = new Frame();
-
-            // Place the frame in the current Window
-            MainWindow.Content = rootFrame;
-
-            rootFrame.NavigationFailed += OnNavigationFailed;
-        }
-
-        if (rootFrame.Content == null)
-        {
-            // When the navigation stack isn't restored navigate to the first page,
-            // configuring the new page by passing required information as a navigation
-            // parameter
-            rootFrame.Navigate(typeof(MainPage), args.Arguments);
-        }
-
-        MainWindow.SetWindowIcon();
+        _mainWindow.SetWindowIcon();
         // Ensure the current window is active
-        MainWindow.Activate();
+        _mainWindow.Activate();
 
         _ = InitializeAsync(database, dllManager);
-    }
-
-    /// <summary>
-    /// Invoked when Navigation to a certain page fails
-    /// </summary>
-    /// <param name="sender">The Frame which failed navigation</param>
-    /// <param name="e">Details about the navigation failure</param>
-    void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
-    {
-        throw new InvalidOperationException($"Failed to load {e.SourcePageType.FullName}: {e.Exception}");
     }
 
     private static async System.Threading.Tasks.Task InitializeAsync(LinuxDatabase database, LinuxDLLManager dllManager)

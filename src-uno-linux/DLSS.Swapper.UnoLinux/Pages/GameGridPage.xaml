@@ -1,0 +1,28 @@
+<Page
+    x:Class="DLSS.Swapper.UnoLinux.Pages.GameGridPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:conv="using:DLSS.Swapper.UnoLinux.Converters"
+    xmlns:data="using:DLSS_Swapper.Core.Data">
+    <Page.Resources>
+        <conv:StringToImageSourceConverter x:Key="CoverConverter"/>
+    </Page.Resources>
+    <Grid>
+        <ProgressRing IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}"
+                      Width="60" Height="60"
+                      HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <GridView ItemsSource="{x:Bind ViewModel.Games, Mode=OneWay}"
+                  Padding="16" SelectionMode="None">
+            <GridView.ItemTemplate>
+                <DataTemplate x:DataType="data:GameBase">
+                    <StackPanel Width="200" Margin="8">
+                        <Image Source="{x:Bind CoverImage, Converter={StaticResource CoverConverter}, Mode=OneWay}"
+                               Width="200" Height="300" Stretch="UniformToFill"/>
+                        <TextBlock Text="{x:Bind Title}" TextWrapping="Wrap"
+                                   Margin="0,8,0,0" Style="{StaticResource CaptionTextBlockStyle}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </GridView.ItemTemplate>
+        </GridView>
+    </Grid>
+</Page>
