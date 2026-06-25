@@ -17,6 +17,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src-linux", "src-linux", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DLSS.Swapper.Linux", "src-linux\DLSS.Swapper.Linux.csproj", "{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src-uno-linux", "src-uno-linux", "{BBEE7A9D-029C-710C-BFBA-43CEA5DFC8C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DLSS.Swapper.UnoLinux", "src-uno-linux\DLSS.Swapper.UnoLinux\DLSS.Swapper.UnoLinux.csproj", "{7238BF65-6830-4F05-B29C-643C5D3D5ED7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -129,6 +133,30 @@ Global
 		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}.Release_Portable|Any CPU.Build.0 = Debug|Any CPU
 		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}.Release_Portable|x86.ActiveCfg = Debug|Any CPU
 		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED}.Release_Portable|x86.Build.0 = Debug|Any CPU
+		{7238BF65-6830-4F05-B29C-643C5D3D5ED7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7238BF65-6830-4F05-B29C-643C5D3D5ED7}.Debug|x64.Build.0 = Debug|Any CPU
+		{7238BF65-6830-4F05-B29C-643C5D3D5ED7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7238BF65-6830-4F05-B29C-643C5D3D5ED7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7238BF65-6830-4F05-B29C-643C5D3D5ED7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7238BF65-6830-4F05-B29C-643C5D3D5ED7}.Debug|x86.Build.0 = Debug|Any CPU
+		{7238BF65-6830-4F05-B29C-643C5D3D5ED7}.Debug_Portable|x64.ActiveCfg = Debug|Any CPU
+		{7238BF65-6830-4F05-B29C-643C5D3D5ED7}.Debug_Portable|x64.Build.0 = Debug|Any CPU
+		{7238BF65-6830-4F05-B29C-643C5D3D5ED7}.Debug_Portable|Any CPU.ActiveCfg = Debug|Any CPU
+		{7238BF65-6830-4F05-B29C-643C5D3D5ED7}.Debug_Portable|Any CPU.Build.0 = Debug|Any CPU
+		{7238BF65-6830-4F05-B29C-643C5D3D5ED7}.Debug_Portable|x86.ActiveCfg = Debug|Any CPU
+		{7238BF65-6830-4F05-B29C-643C5D3D5ED7}.Debug_Portable|x86.Build.0 = Debug|Any CPU
+		{7238BF65-6830-4F05-B29C-643C5D3D5ED7}.Release|x64.ActiveCfg = Release|Any CPU
+		{7238BF65-6830-4F05-B29C-643C5D3D5ED7}.Release|x64.Build.0 = Release|Any CPU
+		{7238BF65-6830-4F05-B29C-643C5D3D5ED7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7238BF65-6830-4F05-B29C-643C5D3D5ED7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7238BF65-6830-4F05-B29C-643C5D3D5ED7}.Release|x86.ActiveCfg = Release|Any CPU
+		{7238BF65-6830-4F05-B29C-643C5D3D5ED7}.Release|x86.Build.0 = Release|Any CPU
+		{7238BF65-6830-4F05-B29C-643C5D3D5ED7}.Release_Portable|x64.ActiveCfg = Debug|Any CPU
+		{7238BF65-6830-4F05-B29C-643C5D3D5ED7}.Release_Portable|x64.Build.0 = Debug|Any CPU
+		{7238BF65-6830-4F05-B29C-643C5D3D5ED7}.Release_Portable|Any CPU.ActiveCfg = Debug|Any CPU
+		{7238BF65-6830-4F05-B29C-643C5D3D5ED7}.Release_Portable|Any CPU.Build.0 = Debug|Any CPU
+		{7238BF65-6830-4F05-B29C-643C5D3D5ED7}.Release_Portable|x86.ActiveCfg = Debug|Any CPU
+		{7238BF65-6830-4F05-B29C-643C5D3D5ED7}.Release_Portable|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -137,6 +165,7 @@ Global
 		{C9FD2AC4-B28D-4100-8FF5-5DCE8B45956A} = {20B3D188-1D40-B6DB-5EFF-20E1C75EFE6A}
 		{AD8614FB-1025-4117-918A-D85B40627077} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{E9777CFC-DC4A-4961-AE69-1C0C0CEAA7ED} = {45438A2C-D3D2-648E-3B36-6E869EE2D565}
+		{7238BF65-6830-4F05-B29C-643C5D3D5ED7} = {BBEE7A9D-029C-710C-BFBA-43CEA5DFC8C6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F184BD5E-34A3-4A6C-BB68-09DAC5BD2093}
