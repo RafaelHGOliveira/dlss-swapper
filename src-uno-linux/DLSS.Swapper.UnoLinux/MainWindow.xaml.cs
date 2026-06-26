@@ -4,13 +4,19 @@ namespace DLSS.Swapper.UnoLinux;
 
 public sealed partial class MainWindow : Window
 {
+    private bool _initDone;
+
     public MainWindow()
     {
         InitializeComponent();
         ContentFrame.Navigate(typeof(Pages.InitialLoadingPage));
     }
 
-    internal void NavigateTo(System.Type pageType) => ContentFrame.Navigate(pageType);
+    internal void NavigateTo(System.Type pageType)
+    {
+        _initDone = true;
+        ContentFrame.Navigate(pageType);
+    }
 
     private void MainNavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
     {
@@ -25,7 +31,7 @@ public sealed partial class MainWindow : Window
             _ => null,
         };
 
-        if (pageType is not null)
+        if (pageType is not null && _initDone)
             ContentFrame.Navigate(pageType);
     }
 }
