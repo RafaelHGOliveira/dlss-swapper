@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -95,7 +94,11 @@ public partial class DLLPickerControlModel : ObservableObject
     [RelayCommand]
     async Task SwapDllAsync()
     {
-        if (SelectedDLLRecord?.LocalRecord is null) return;
+        if (SelectedDLLRecord?.LocalRecord is null)
+        {
+            ShowError("DLL record is unavailable.");
+            return;
+        }
 
         if (SelectedDLLRecord.LocalRecord.FileDownloader is not null)
             return; // já baixando — aguardar
@@ -143,7 +146,9 @@ public partial class DLLPickerControlModel : ObservableObject
         if (CurrentGameAsset is null) return;
         var dir = Path.GetDirectoryName(CurrentGameAsset.Path);
         if (dir is not null)
-            System.Diagnostics.Process.Start("xdg-open", dir);
+        {
+            using var proc = System.Diagnostics.Process.Start("xdg-open", dir);
+        }
     }
 
     public void ClearError()
