@@ -5,11 +5,12 @@
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
-        <!-- Load WinUI resources -->
         <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
       </ResourceDictionary.MergedDictionaries>
 
-      <!-- Add resources here -->
+      <Style x:Key="SagoeFluentIconsFontIcon" TargetType="FontIcon">
+        <Setter Property="FontFamily" Value="{ThemeResource SymbolThemeFontFamily}" />
+      </Style>
 
     </ResourceDictionary>
   </Application.Resources>
