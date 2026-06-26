@@ -27,7 +27,8 @@ public sealed partial class MainWindow : Window
         System.Type? pageType = tag switch
         {
             "GameGridPage" => typeof(Pages.GameGridPage),
-            // LibraryPage, SettingsPage, AcknowledgementsPage not yet implemented
+            "LibraryPage"  => typeof(Pages.LibraryPage),
+            // SettingsPage, AcknowledgementsPage not yet implemented
             _ => null,
         };
 

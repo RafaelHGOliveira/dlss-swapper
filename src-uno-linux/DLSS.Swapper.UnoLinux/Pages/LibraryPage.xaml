@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="DLSS.Swapper.UnoLinux.Pages.LibraryPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:data="using:DLSS_Swapper.Data"
+    xmlns:shims="using:DLSS.Swapper.UnoLinux.Shims"
+    xmlns:converters="using:DLSS.Swapper.UnoLinux.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <converters:DLSSStateVisibilityConverter x:Key="IsDownloadingConverter" DesierdState="Downloading"/>
+        <converters:DLSSStateVisibilityConverter x:Key="IsDownloadedConverter"   DesierdState="Downloaded"/>
+        <converters:DLSSStateVisibilityConverter x:Key="IsNotFoundConverter"     DesierdState="NotFound"/>
+        <converters:DLSSStateVisibilityConverter x:Key="IsImportedConverter"     DesierdState="Imported"/>
+        <converters:BoolToVisibilityConverter    x:Key="BoolToVisibilityConverter"/>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>  <!-- command bar -->
+            <RowDefinition Height="Auto"/>  <!-- type tabs (Pivot) -->
+            <RowDefinition Height="*"/>     <!-- records list -->
+        </Grid.RowDefinitions>
+
+        <!-- Row 0: Command bar -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Padding="12,8" Spacing="8"
+                    VerticalAlignment="Center">
+            <TextBlock Text="Library" Style="{StaticResource TitleTextBlockStyle}"
+                       VerticalAlignment="Center" Margin="0,0,12,0"/>
+            <ProgressRing Width="20" Height="20" VerticalAlignment="Center"
+                          IsActive="{x:Bind ViewModel.IsRefreshing, Mode=OneWay}"
+                          Visibility="{x:Bind ViewModel.IsRefreshing, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"/>
+            <Button ToolTipService.ToolTip="Refresh" Command="{x:Bind ViewModel.RefreshCommand}">
+                <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE72C;"/>
+            </Button>
+            <!-- Import and Export wired in Task 5 — disabled for now -->
+            <Button ToolTipService.ToolTip="Import" IsEnabled="False">
+                <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE8B5;"/>
+            </Button>
+            <Button ToolTipService.ToolTip="Export All" IsEnabled="False">
+                <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xEDE1;"/>
+            </Button>
+        </StackPanel>
+
+        <!-- Row 1: Type selector tabs
+             Each PivotItem header maps 1:1 to TypeOrder[] in LibraryPage.xaml.cs.
+             PivotItem bodies are empty; the list lives in Row 2. -->
+        <Pivot Grid.Row="1" SelectionChanged="OnPivotSelectionChanged">
+            <PivotItem Header="DLSS"/>
+            <PivotItem Header="DLSS G"/>
+            <PivotItem Header="DLSS D"/>
+            <PivotItem Header="FSR 3.1 DX12"/>
+            <PivotItem Header="FSR 3.1 VK"/>
+            <PivotItem Header="XeSS"/>
+            <PivotItem Header="XeLL"/>
+            <PivotItem Header="XeSS FG"/>
+            <PivotItem Header="XeSS DX11"/>
+        </Pivot>
+
+        <!-- Row 2: Records list -->
+        <ListView Grid.Row="2"
+                  ItemsSource="{x:Bind ViewModel.CurrentRecords}"
+                  SelectionMode="None">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="data:DLLRecord">
+                    <Grid HorizontalAlignment="Stretch" ColumnSpacing="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- DLL display name -->
+                        <TextBlock Grid.Column="0" Text="{x:Bind DisplayName}"
+                                   VerticalAlignment="Center"
+                                   TextWrapping="NoWrap"
+                                   TextTrimming="CharacterEllipsis"/>
+
+                        <!-- State: Imported (checkmark icon) -->
+                        <StackPanel Grid.Column="1" Orientation="Horizontal"
+                                    Visibility="{x:Bind LocalRecord, Converter={StaticResource IsImportedConverter}, Mode=OneWay}">
+                            <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}"
+                                      Glyph="&#xE7B8;" Width="20" Height="20"
+                                      ToolTipService.ToolTip="Imported"/>
+                        </StackPanel>
+
+                        <!-- State: Not downloaded — Download button -->
+                        <StackPanel Grid.Column="1" Orientation="Horizontal"
+                                    Visibility="{x:Bind LocalRecord, Converter={StaticResource IsNotFoundConverter}, Mode=OneWay}">
+                            <Button Click="OnDownloadClick"
+                                    ToolTipService.ToolTip="{x:Bind ((shims:DLLRecordStrings)TranslationProperties).RequiresDownloadText, Mode=OneWay}">
+                                <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE896;"/>
+                            </Button>
+                        </StackPanel>
+
+                        <!-- State: Downloading — progress ring
+                             Use classic {Binding} for the double-nullable FileDownloader chain. -->
+                        <StackPanel Grid.Column="1" Orientation="Horizontal"
+                                    Visibility="{x:Bind LocalRecord, Converter={StaticResource IsDownloadingConverter}, Mode=OneWay}">
+                            <ProgressRing Width="20" Height="20"
+                                          Minimum="0" Maximum="100"
+                                          IsIndeterminate="{Binding LocalRecord.FileDownloader.IsIndeterminate, Mode=OneWay}"
+                                          Value="{Binding LocalRecord.FileDownloader.Percent, Mode=OneWay}"
+                                          ToolTipService.ToolTip="{x:Bind ((shims:DLLRecordStrings)TranslationProperties).DownloadingText, Mode=OneWay}"/>
+                        </StackPanel>
+
+                        <!-- State: Downloaded — Open folder + Delete buttons -->
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4"
+                                    Visibility="{x:Bind LocalRecord, Converter={StaticResource IsDownloadedConverter}, Mode=OneWay}">
+                            <Button Click="OnOpenFolderClick" ToolTipService.ToolTip="Open folder">
+                                <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE8A7;"/>
+                            </Button>
+                            <Button Click="OnDeleteClick" ToolTipService.ToolTip="Delete">
+                                <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE74D;"/>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+        </ListView>
+    </Grid>
+</Page>
