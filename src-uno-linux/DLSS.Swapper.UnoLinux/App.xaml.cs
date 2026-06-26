@@ -25,17 +25,21 @@ public partial class App : Application
 
     public IGameLibraryFactory GameFactory { get; private set; } = null!;
     public LinuxDLLManager DllManager { get; private set; } = null!;
+    public LinuxSettings Settings { get; private set; } = null!;
 
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
         var storageProvider = new LinuxStoragePathProvider();
         Storage.Initialize(storageProvider);
-        Logger.Init(Path.Combine(Storage.GetTemp(), "logs"), LoggingLevel.Info);
+
+        var settings = LinuxSettings.Load(Storage.GetStorageFolder());
+        Settings = settings;
+
+        Logger.Init(Path.Combine(Storage.GetTemp(), "logs"), settings.LoggingLevel);
 
         var httpClient = new HttpClient();
         var database = new LinuxDatabase();
         var dllManager = new LinuxDLLManager(httpClient);
-        var settings = new LinuxSettings();
         var gameManager = new LinuxGameManager();
         var steamProvider = new LinuxSteamPathProvider();
         var gameFactory = new LinuxGameFactory(steamProvider, gameManager);
