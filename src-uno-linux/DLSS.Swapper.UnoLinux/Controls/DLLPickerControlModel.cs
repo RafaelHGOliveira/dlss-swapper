@@ -54,7 +54,7 @@ public partial class DLLPickerControlModel : ObservableObject
         _assetType = assetType;
         _dllManager = dllManager;
 
-        DLLRecords = [.. dllManager.GetRecordsForAssetType(assetType)];
+        DLLRecords = [.. dllManager.GetRecordsForAssetType(assetType).OrderByDescending(r => r.VersionNumber)];
         AnyDLLsVisible = DLLRecords.Count > 0;
 
         RefreshAssets();

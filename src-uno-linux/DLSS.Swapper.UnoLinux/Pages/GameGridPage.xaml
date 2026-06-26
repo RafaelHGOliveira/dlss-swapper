@@ -7,12 +7,28 @@
     <Page.Resources>
         <conv:StringToImageSourceConverter x:Key="CoverConverter"/>
     </Page.Resources>
-    <Grid>
-        <ProgressRing IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}"
+    <Grid RowDefinitions="Auto,*">
+        <!-- Filter bar -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Padding="16,8" Spacing="12" VerticalAlignment="Center">
+            <ToggleSwitch x:Name="FilterToggle"
+                          Header="Só jogos com DLLs"
+                          IsOn="{x:Bind ViewModel.HideNonSwappable, Mode=TwoWay}"
+                          OffContent="" OnContent=""/>
+        </StackPanel>
+
+        <!-- Loading indicator -->
+        <ProgressRing Grid.Row="1"
+                      IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}"
                       Width="60" Height="60"
                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <GridView ItemsSource="{x:Bind ViewModel.Games, Mode=OneWay}"
-                  Padding="16" SelectionMode="None">
+
+        <!-- Game grid -->
+        <GridView Grid.Row="1"
+                  ItemsSource="{x:Bind ViewModel.FilteredGames, Mode=OneWay}"
+                  Padding="16"
+                  IsItemClickEnabled="True"
+                  SelectionMode="None"
+                  ItemClick="OnGameItemClick">
             <GridView.ItemTemplate>
                 <DataTemplate x:DataType="data:GameBase">
                     <StackPanel Width="200" Margin="8">

@@ -14,21 +14,37 @@ public partial class UnoGameGridPageModel : ObservableObject
     [ObservableProperty]
     bool _isLoading;
 
-    public ObservableCollection<GameBase> Games { get; } = new();
-    public bool HasNoGames => Games.Count == 0;
+    [ObservableProperty]
+    bool _hideNonSwappable;
+
+    readonly List<GameBase> _allGames = new();
+    public ObservableCollection<GameBase> FilteredGames { get; } = new();
+
     public AsyncRelayCommand LoadGamesCommand { get; }
 
     public UnoGameGridPageModel(IGameLibraryFactory factory)
     {
         _factory = factory;
-        Games.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasNoGames));
         LoadGamesCommand = new AsyncRelayCommand(LoadGamesAsync);
+    }
+
+    partial void OnHideNonSwappableChanged(bool value) => ApplyFilter();
+
+    void ApplyFilter()
+    {
+        FilteredGames.Clear();
+        foreach (var game in _allGames)
+        {
+            if (!HideNonSwappable || game.HasSwappableItems)
+                FilteredGames.Add(game);
+        }
     }
 
     async Task LoadGamesAsync()
     {
         IsLoading = true;
-        Games.Clear();
+        _allGames.Clear();
+        FilteredGames.Clear();
         try
         {
             foreach (var library in _factory.CreateEnabledLibraries())
@@ -37,8 +53,9 @@ public partial class UnoGameGridPageModel : ObservableObject
                 await library.LoadGamesFromCacheAsync();
                 var games = await library.ListGamesAsync(forceNeedsProcessing: false);
                 foreach (var game in games)
-                    Games.Add(game);
+                    _allGames.Add(game);
             }
+            ApplyFilter();
         }
         finally
         {

@@ -51,9 +51,10 @@ public partial class App : Application
         DllManager = dllManager;
 
         _mainWindow = new MainWindow();
-#if DEBUG
-        _mainWindow.UseStudio();
-#endif
+        // UseStudio() (Uno Hot Reload) intentionally omitted: this prototype runs via
+        // `dotnet run` with no Uno dev server, so it only logs a non-fatal
+        // "DevServer isn't able to connect" error. C# hot reload is unavailable with a
+        // debugger attached anyway. Re-add under #if DEBUG if running through the IDE.
 
         _mainWindow.SetWindowIcon();
         // Ensure the current window is active
