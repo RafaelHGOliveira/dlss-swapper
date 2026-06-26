@@ -48,8 +48,10 @@ public sealed class LinuxFilePickerService : IFilePickerService
 
         if (string.IsNullOrWhiteSpace(stdout)) return Array.Empty<string>();
 
+        // kdialog --separate-output → newline-delimited; zenity default separator → '|'
+        char sep = _tool == PickerTool.KDialog ? '\n' : '|';
         return stdout
-            .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            .Split(sep, StringSplitOptions.RemoveEmptyEntries)
             .Select(p => p.Trim())
             .Where(p => p.Length > 0)
             .ToList();
@@ -101,7 +103,8 @@ public sealed class LinuxFilePickerService : IFilePickerService
         var si = new ProcessStartInfo("kdialog") { RedirectStandardOutput = true, UseShellExecute = false };
         si.ArgumentList.Add("--getsavefilename");
         si.ArgumentList.Add(Path.Combine(StartDir, defaultName));
-        si.ArgumentList.Add(BuildKDialogFilter(new[] { extension }));
+        if (!string.IsNullOrEmpty(extension))
+            si.ArgumentList.Add(BuildKDialogFilter(new[] { extension }));
         return await RunProcess(si);
     }
 
@@ -132,7 +135,7 @@ public sealed class LinuxFilePickerService : IFilePickerService
         if (allowMultiple)
         {
             si.ArgumentList.Add("--multiple");
-            si.ArgumentList.Add("--separator=\n"); // pass actual LF so output is newline-delimited
+            // omit --separator; zenity default '|' is reliable; stdout is split on '|' in PickFilesAsync
         }
         if (extensions.Length > 0)
         {
