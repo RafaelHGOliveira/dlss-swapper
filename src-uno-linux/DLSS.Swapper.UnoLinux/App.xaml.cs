@@ -26,6 +26,8 @@ public partial class App : Application
     public IGameLibraryFactory GameFactory { get; private set; } = null!;
     public LinuxDLLManager DllManager { get; private set; } = null!;
     public LinuxSettings Settings { get; private set; } = null!;
+    public LinuxDatabase Database { get; private set; } = null!;
+    public MainWindow MainWindowRef { get; private set; } = null!;
 
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
@@ -53,8 +55,11 @@ public partial class App : Application
 
         GameFactory = gameFactory;
         DllManager = dllManager;
+        Database = database;
 
-        _mainWindow = new MainWindow();
+        var mainWindow = new MainWindow();
+        MainWindowRef = mainWindow;
+        _mainWindow = mainWindow;
         // UseStudio() (Uno Hot Reload) intentionally omitted: this prototype runs via
         // `dotnet run` with no Uno dev server, so it only logs a non-fatal
         // "DevServer isn't able to connect" error. C# hot reload is unavailable with a
@@ -63,21 +68,6 @@ public partial class App : Application
         _mainWindow.SetWindowIcon();
         // Ensure the current window is active
         _mainWindow.Activate();
-
-        _ = InitializeAsync(database, dllManager);
-    }
-
-    private static async System.Threading.Tasks.Task InitializeAsync(LinuxDatabase database, LinuxDLLManager dllManager)
-    {
-        try
-        {
-            await database.InitializeAsync().ConfigureAwait(false);
-            await dllManager.LoadManifestAsync().ConfigureAwait(false);
-        }
-        catch (System.Exception ex)
-        {
-            Logger.Error(ex, "Async init failed");
-        }
     }
 
     /// <summary>

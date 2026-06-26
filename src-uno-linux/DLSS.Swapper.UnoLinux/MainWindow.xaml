@@ -7,15 +7,36 @@
     <muxc:NavigationView x:Name="MainNavigationView"
                          PaneDisplayMode="LeftCompact"
                          IsBackButtonVisible="Collapsed"
-                         IsSettingsVisible="False">
+                         IsSettingsVisible="False"
+                         SelectionChanged="MainNavigationView_SelectionChanged">
         <muxc:NavigationView.MenuItems>
-            <muxc:NavigationViewItem Content="Games" IsSelected="True">
+            <muxc:NavigationViewItem Content="Games" Tag="GameGridPage" IsSelected="True">
                 <muxc:NavigationViewItem.Icon>
                     <FontIcon Glyph="&#xE7FC;"
                               FontFamily="{StaticResource SymbolThemeFontFamily}"/>
                 </muxc:NavigationViewItem.Icon>
             </muxc:NavigationViewItem>
+            <muxc:NavigationViewItem Content="Library" Tag="LibraryPage">
+                <muxc:NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xE8F1;"
+                              FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+                </muxc:NavigationViewItem.Icon>
+            </muxc:NavigationViewItem>
         </muxc:NavigationView.MenuItems>
+        <muxc:NavigationView.FooterMenuItems>
+            <muxc:NavigationViewItem Content="Settings" Tag="SettingsPage">
+                <muxc:NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xE713;"
+                              FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+                </muxc:NavigationViewItem.Icon>
+            </muxc:NavigationViewItem>
+            <muxc:NavigationViewItem Content="Acknowledgements" Tag="AcknowledgementsPage">
+                <muxc:NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xE946;"
+                              FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+                </muxc:NavigationViewItem.Icon>
+            </muxc:NavigationViewItem>
+        </muxc:NavigationView.FooterMenuItems>
         <Frame x:Name="ContentFrame"/>
     </muxc:NavigationView>
 </Window>
