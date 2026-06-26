@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../src-core/DLSS.Swapper.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="../src-uno-linux/Platform/**/*.cs" Exclude="../src-uno-linux/Platform/**/LinuxDLLManager.cs;../src-uno-linux/Platform/**/LinuxGameManager.cs;../src-uno-linux/Platform/**/LinuxDatabase.cs" />
+  </ItemGroup>
+
+</Project>

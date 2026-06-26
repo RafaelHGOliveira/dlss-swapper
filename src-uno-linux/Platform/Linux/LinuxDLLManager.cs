@@ -38,7 +38,7 @@ public sealed class LinuxDLLManager : IDLLManager
         DLLRecord.RunOnUIThreadDelegate = action => { dispatcher?.TryEnqueue(() => action()); };
         DLLRecord.ExtractFromZipDelegate = HandleExtractFromZip;
         DLLRecord.GetDownloadErrorMessageDelegate = t => $"Could not download {t}.";
-        DLLRecord.CreateTranslationPropertiesDelegate = () => null;
+        DLLRecord.CreateTranslationPropertiesDelegate = () => new DLSS.Swapper.UnoLinux.Shims.DLLRecordStrings();
 
         FileDownloader.RunOnUIThreadDelegate = action => { dispatcher?.TryEnqueue(() => action()); };
         FileDownloader.GetHttpClientDelegate = () => _httpClient;
