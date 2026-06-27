@@ -57,6 +57,17 @@ public partial class UnoAcknowledgementsPageModel : ObservableObject
 
             var displayName = fullName.Substring(nameStart);
 
+            // MSBuild's manifest-name generation applies the Everett-identifier transform,
+            // mangling '-' to '_' (e.g. "FidelityFX-SDK" -> "FidelityFX_SDK"). Remap the two
+            // affected folders back, mirroring the Windows loader. A blanket '_'->'-' replace
+            // would corrupt unaffected names, so the remap is explicit and per-case.
+            displayName = displayName switch
+            {
+                "FidelityFX_SDK" => "FidelityFX-SDK",
+                "SQLite_net" => "SQLite-net",
+                _ => displayName,
+            };
+
             if (!items.TryGetValue(displayName, out var item))
             {
                 item = new AcknowledgementItem(displayName);

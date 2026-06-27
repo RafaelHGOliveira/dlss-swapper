@@ -60,6 +60,18 @@ public partial class App : Application
         var mainWindow = new MainWindow();
         MainWindowRef = mainWindow;
         _mainWindow = mainWindow;
+
+        // Apply the saved theme at launch (Settings page applies it live, but the
+        // persisted choice must also take effect before the user opens Settings).
+        if (mainWindow.Content is Microsoft.UI.Xaml.FrameworkElement rootElement)
+        {
+            rootElement.RequestedTheme = settings.AppTheme switch
+            {
+                "Light" => Microsoft.UI.Xaml.ElementTheme.Light,
+                "Dark" => Microsoft.UI.Xaml.ElementTheme.Dark,
+                _ => Microsoft.UI.Xaml.ElementTheme.Default,
+            };
+        }
         // UseStudio() (Uno Hot Reload) intentionally omitted: this prototype runs via
         // `dotnet run` with no Uno dev server, so it only logs a non-fatal
         // "DevServer isn't able to connect" error. C# hot reload is unavailable with a

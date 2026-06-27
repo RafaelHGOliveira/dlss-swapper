@@ -28,7 +28,8 @@ public sealed partial class MainWindow : Window
         {
             "GameGridPage" => typeof(Pages.GameGridPage),
             "LibraryPage"  => typeof(Pages.LibraryPage),
-            // SettingsPage, AcknowledgementsPage not yet implemented
+            "SettingsPage" => typeof(Pages.SettingsPage),
+            "AcknowledgementsPage" => typeof(Pages.AcknowledgementsPage),
             _ => null,
         };
 
