@@ -135,6 +135,7 @@ public sealed class LinuxDLLManager : IDLLManager
 
     void PopulateCollection(ObservableCollection<DLLRecord> collection, List<DLLRecord> records, GameAssetType assetType)
     {
+        records.Sort(); // descending by version, matching Windows MergeManifestsIntoMasterList
         collection.Clear();
         foreach (var record in records)
         {
