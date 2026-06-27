@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentDialog
+    x:Class="DLSS.Swapper.UnoLinux.Controls.GameControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    CloseButtonText="Close"
+    MinWidth="560">
+
+    <ContentDialog.Content>
+        <Grid ColumnSpacing="20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Left: cover image -->
+            <Border Grid.Column="0" Width="200" Height="300" CornerRadius="8"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1">
+                <Image x:Name="CoverImageControl" Stretch="UniformToFill" />
+            </Border>
+
+            <!-- Right: install path + DLL sections -->
+            <StackPanel Grid.Column="1" Spacing="12" VerticalAlignment="Top">
+
+                <TextBlock x:Uid="GameControl_InstallPath" Text="Install path" FontWeight="Bold" />
+                <Grid ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="InstallPathBox" Grid.Column="0" IsReadOnly="True"
+                             VerticalAlignment="Stretch" />
+                    <Button Grid.Column="1" VerticalAlignment="Stretch"
+                            ToolTipService.ToolTip="Open folder"
+                            Click="OpenFolder_Click">
+                        <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE8A7;" />
+                    </Button>
+                </Grid>
+
+                <!-- DLL type sections — built in code-behind and added here -->
+                <StackPanel x:Name="DllSectionsPanel" Spacing="12" />
+
+            </StackPanel>
+        </Grid>
+    </ContentDialog.Content>
+
+</ContentDialog>

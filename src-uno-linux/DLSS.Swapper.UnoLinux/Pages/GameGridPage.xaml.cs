@@ -1,4 +1,3 @@
-using System.Linq;
 using DLSS.Swapper.UnoLinux.Controls;
 using DLSS_Swapper.Core.Data;
 using DLSS_Swapper.Data;
@@ -25,14 +24,11 @@ public sealed partial class GameGridPage : Page
         var app = (App)Microsoft.UI.Xaml.Application.Current;
         var dllManager = app.DllManager;
 
-        var swappable = game.GameAssets
-            .Select(a => a.AssetType)
-            .Where(t => t != GameAssetType.Unknown &&
-                        !t.ToString().EndsWith("_BACKUP", System.StringComparison.Ordinal))
-            .Distinct()
-            .ToList();
+        var hasSwappable = game.GameAssets
+            .Any(a => a.AssetType != GameAssetType.Unknown &&
+                      !a.AssetType.ToString().EndsWith("_BACKUP", System.StringComparison.Ordinal));
 
-        if (swappable.Count == 0)
+        if (!hasSwappable)
         {
             var infoDialog = new ContentDialog
             {
@@ -45,60 +41,7 @@ public sealed partial class GameGridPage : Page
             return;
         }
 
-        var dialog = new ContentDialog
-        {
-            Title = game.Title,
-            PrimaryButtonText = "Swap",
-            SecondaryButtonText = "Restore",
-            CloseButtonText = "Close",
-            IsPrimaryButtonEnabled = false,
-            IsSecondaryButtonEnabled = false,
-            XamlRoot = XamlRoot,
-        };
-
-        DLLPickerControl? control = null;
-
-        if (swappable.Count == 1)
-        {
-            control = new DLLPickerControl(game, swappable[0], dllManager);
-            dialog.Content = control;
-            control.ViewModel.SetHostDialog(dialog);
-            dialog.PrimaryButtonCommand = control.ViewModel.SwapDllCommand;
-            dialog.SecondaryButtonCommand = control.ViewModel.ResetDllCommand;
-        }
-        else
-        {
-            var combo = new ComboBox
-            {
-                ItemsSource = swappable,
-                PlaceholderText = "Select DLL type…",
-                HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Stretch,
-                MinWidth = 400,
-            };
-            dialog.Content = combo;
-            combo.SelectionChanged += (_, _) =>
-            {
-                if (combo.SelectedItem is GameAssetType selectedType)
-                {
-                    control = new DLLPickerControl(game, selectedType, dllManager);
-                    dialog.Content = control;
-                    control.ViewModel.SetHostDialog(dialog);
-                    dialog.PrimaryButtonCommand = control.ViewModel.SwapDllCommand;
-                    dialog.SecondaryButtonCommand = control.ViewModel.ResetDllCommand;
-                }
-            };
-        }
-
-        dialog.Closing += (_, args) =>
-        {
-            if ((args.Result == ContentDialogResult.Primary ||
-                 args.Result == ContentDialogResult.Secondary) &&
-                control?.ViewModel.CanClose != true)
-            {
-                args.Cancel = true;
-            }
-        };
-
-        await dialog.ShowAsync();
+        var control = new GameControl(game, dllManager) { XamlRoot = XamlRoot };
+        await control.ShowAsync();
     }
 }

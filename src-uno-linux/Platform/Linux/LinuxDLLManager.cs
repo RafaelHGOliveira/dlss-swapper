@@ -113,15 +113,15 @@ public sealed class LinuxDLLManager : IDLLManager
             // 3. Populate collections from regular manifest (if available)
             if (manifest is not null)
             {
-                PopulateCollection(DLSS, manifest.DLSS);
-                PopulateCollection(DLSS_G, manifest.DLSS_G);
-                PopulateCollection(DLSS_D, manifest.DLSS_D);
-                PopulateCollection(FSR_31_DX12, manifest.FSR_31_DX12);
-                PopulateCollection(FSR_31_VK, manifest.FSR_31_VK);
-                PopulateCollection(XeSS, manifest.XeSS);
-                PopulateCollection(XeLL, manifest.XeLL);
-                PopulateCollection(XeSS_FG, manifest.XeSS_FG);
-                PopulateCollection(XeSS_DX11, manifest.XeSS_DX11);
+                PopulateCollection(DLSS, manifest.DLSS, GameAssetType.DLSS);
+                PopulateCollection(DLSS_G, manifest.DLSS_G, GameAssetType.DLSS_G);
+                PopulateCollection(DLSS_D, manifest.DLSS_D, GameAssetType.DLSS_D);
+                PopulateCollection(FSR_31_DX12, manifest.FSR_31_DX12, GameAssetType.FSR_31_DX12);
+                PopulateCollection(FSR_31_VK, manifest.FSR_31_VK, GameAssetType.FSR_31_VK);
+                PopulateCollection(XeSS, manifest.XeSS, GameAssetType.XeSS);
+                PopulateCollection(XeLL, manifest.XeLL, GameAssetType.XeLL);
+                PopulateCollection(XeSS_FG, manifest.XeSS_FG, GameAssetType.XeSS_FG);
+                PopulateCollection(XeSS_DX11, manifest.XeSS_DX11, GameAssetType.XeSS_DX11);
             }
 
             // 4. Always merge imported manifest (even if regular manifest was absent)
@@ -133,11 +133,12 @@ public sealed class LinuxDLLManager : IDLLManager
         }
     }
 
-    void PopulateCollection(ObservableCollection<DLLRecord> collection, List<DLLRecord> records)
+    void PopulateCollection(ObservableCollection<DLLRecord> collection, List<DLLRecord> records, GameAssetType assetType)
     {
         collection.Clear();
         foreach (var record in records)
         {
+            record.AssetType = assetType;
             LoadLocalRecord(record);
             collection.Add(record);
         }
