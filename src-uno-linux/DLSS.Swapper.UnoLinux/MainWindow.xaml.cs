@@ -12,6 +12,9 @@ public sealed partial class MainWindow : Window
         ContentFrame.Navigate(typeof(Pages.InitialLoadingPage));
     }
 
+    internal void ApplyTheme(Microsoft.UI.Xaml.ElementTheme theme) =>
+        MainNavigationView.RequestedTheme = theme;
+
     internal void NavigateTo(System.Type pageType)
     {
         _initDone = true;
