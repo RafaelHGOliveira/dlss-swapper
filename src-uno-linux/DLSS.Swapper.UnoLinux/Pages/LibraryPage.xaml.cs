@@ -42,10 +42,25 @@ public sealed partial class LibraryPage : Page
             ViewModel.DownloadRecord(record);
     }
 
-    private void OnDeleteClick(object sender, RoutedEventArgs e)
+    private async void OnDeleteClick(object sender, RoutedEventArgs e)
     {
         if (sender is FrameworkElement { DataContext: DLLRecord record })
-            ViewModel.DeleteRecord(record);
+        {
+            if (XamlRoot is null) return;
+            await ViewModel.DeleteRecord(record, XamlRoot);
+        }
+    }
+
+    private async void OnImportClick(object sender, RoutedEventArgs e)
+    {
+        if (XamlRoot is null) return;
+        await ViewModel.ImportAsync(XamlRoot);
+    }
+
+    private async void OnExportClick(object sender, RoutedEventArgs e)
+    {
+        if (XamlRoot is null) return;
+        await ViewModel.ExportAsync(XamlRoot);
     }
 
     private void OnOpenFolderClick(object sender, RoutedEventArgs e)

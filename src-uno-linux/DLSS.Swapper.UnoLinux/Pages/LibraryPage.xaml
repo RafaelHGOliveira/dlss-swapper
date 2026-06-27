@@ -36,11 +36,10 @@
             <Button ToolTipService.ToolTip="Refresh" Command="{x:Bind ViewModel.RefreshCommand}">
                 <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE72C;"/>
             </Button>
-            <!-- Import and Export wired in Task 5 — disabled for now -->
-            <Button ToolTipService.ToolTip="Import" IsEnabled="False">
+            <Button ToolTipService.ToolTip="Import" Click="OnImportClick">
                 <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE8B5;"/>
             </Button>
-            <Button ToolTipService.ToolTip="Export All" IsEnabled="False">
+            <Button ToolTipService.ToolTip="Export All" Click="OnExportClick">
                 <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xEDE1;"/>
             </Button>
         </StackPanel>
