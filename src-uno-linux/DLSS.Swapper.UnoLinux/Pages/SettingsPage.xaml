@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="DLSS.Swapper.UnoLinux.Pages.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:sys="using:System"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <ScrollViewer>
+        <StackPanel Padding="24" Spacing="24" MaxWidth="720" HorizontalAlignment="Left">
+
+            <TextBlock Text="Settings" Style="{StaticResource TitleTextBlockStyle}"/>
+
+            <!-- 1. Theme -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="Theme" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                <RadioButton Content="Light" GroupName="ThemeGroup"
+                             IsChecked="{x:Bind ViewModel.LightThemeSelected, Mode=TwoWay}"/>
+                <RadioButton Content="Dark" GroupName="ThemeGroup"
+                             IsChecked="{x:Bind ViewModel.DarkThemeSelected, Mode=TwoWay}"/>
+                <RadioButton Content="Use system setting" GroupName="ThemeGroup"
+                             IsChecked="{x:Bind ViewModel.DefaultThemeSelected, Mode=TwoWay}"/>
+            </StackPanel>
+
+            <!-- 2. Ignored paths -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="Ignored paths" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                <TextBlock Text="Games found under these folders are skipped." TextWrapping="Wrap"
+                           Style="{StaticResource CaptionTextBlockStyle}"/>
+                <Button Content="Add ignored path" Command="{x:Bind ViewModel.AddIgnoredPathCommand}"/>
+                <ListView ItemsSource="{x:Bind ViewModel.IgnoredPaths}"
+                          SelectionMode="None" MaxHeight="240">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="sys:String">
+                            <Grid HorizontalAlignment="Stretch" ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{x:Bind}"
+                                           VerticalAlignment="Center"
+                                           TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"/>
+                                <Button Grid.Column="1" Click="OnRemoveIgnoredPathClick"
+                                        ToolTipService.ToolTip="Remove">
+                                    <FontIcon Style="{StaticResource SagoeFluentIconsFontIcon}" Glyph="&#xE74D;"/>
+                                </Button>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                </ListView>
+            </StackPanel>
+
+            <!-- 3. DLL behaviour -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="DLLs" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                <ToggleSwitch Header="Allow debug DLLs"
+                              IsOn="{x:Bind ViewModel.AllowDebugDlls, Mode=TwoWay}"/>
+                <ToggleSwitch Header="Only show downloaded DLLs"
+                              IsOn="{x:Bind ViewModel.OnlyShowDownloadedDlls, Mode=TwoWay}"/>
+            </StackPanel>
+
+            <!-- 4. Logging -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="Logging" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                <ComboBox Header="Logging level"
+                          ItemsSource="{x:Bind ViewModel.LoggingLevels}"
+                          SelectedItem="{x:Bind ViewModel.SelectedLoggingLevel, Mode=TwoWay}"/>
+                <TextBlock Text="{x:Bind ViewModel.LogDirectory}" IsTextSelectionEnabled="True"
+                           TextWrapping="Wrap" Style="{StaticResource CaptionTextBlockStyle}"/>
+                <Button Content="Open log folder" Command="{x:Bind ViewModel.OpenLogFolderCommand}"/>
+            </StackPanel>
+
+            <!-- 5. Language -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="Language" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                <ComboBox ItemsSource="{x:Bind ViewModel.Languages}"
+                          DisplayMemberPath="Value"
+                          SelectedItem="{x:Bind ViewModel.SelectedLanguage, Mode=TwoWay}"/>
+                <TextBlock Text="A language change may require an app restart." TextWrapping="Wrap"
+                           Style="{StaticResource CaptionTextBlockStyle}"/>
+            </StackPanel>
+
+            <!-- 6. About -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="About" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                <TextBlock Text="{x:Bind ViewModel.AppVersion}" IsTextSelectionEnabled="True"/>
+                <Button Content="View releases on GitHub" Command="{x:Bind ViewModel.OpenReleasesCommand}"/>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>
