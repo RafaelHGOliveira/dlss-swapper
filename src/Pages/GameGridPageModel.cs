@@ -153,6 +153,13 @@ public partial class GameGridPageModel : ObservableObject
                 ResourceHelper.GetFormattedResourceTemplate("GamesPage_Batch_DllLabelTemplate", DLLManager.Instance.GetAssetTypeName(a.Type), a.Record.DisplayName)))
             .ToList();
 
+        var restoreText = ResourceHelper.GetString("GamePage_RestoreOriginalDll");
+        var restoreActions = picker.ViewModel.PlannedRestoreActions
+            .Select(type => new BatchRestoreActionItem(
+                type,
+                ResourceHelper.GetFormattedResourceTemplate("GamesPage_Batch_RestoreLabelTemplate", DLLManager.Instance.GetAssetTypeName(type), restoreText)))
+            .ToList();
+
         var presetActions = picker.ViewModel.PlannedPresetActions
             .Select(a => new BatchPresetActionItem(
                 a.Type,
@@ -160,10 +167,12 @@ public partial class GameGridPageModel : ObservableObject
                 ResourceHelper.GetFormattedResourceTemplate("GamesPage_Batch_PresetLabelTemplate", DLLManager.Instance.GetAssetTypeName(a.Type), a.Preset.Name)))
             .ToList();
 
-        if (dllActions.Count == 0 && presetActions.Count == 0)
+        if (dllActions.Count == 0 && restoreActions.Count == 0 && presetActions.Count == 0)
         {
             return;
         }
+
+        var orphanBackupMessage = ResourceHelper.GetString("GamesPage_Batch_Error_OrphanBackup");
 
         // 2. Make sure every chosen DLL is on disk before touching any game.
         foreach (var action in dllActions)
@@ -254,6 +263,10 @@ public partial class GameGridPageModel : ObservableObject
                         {
                             results.Add(SkippedResult(game, dllAction.Label, "GamesPage_Batch_Skipped_Processing"));
                         }
+                        foreach (var restoreAction in restoreActions)
+                        {
+                            results.Add(SkippedResult(game, restoreAction.Label, "GamesPage_Batch_Skipped_Processing"));
+                        }
                         foreach (var presetAction in presetActions)
                         {
                             results.Add(SkippedResult(game, presetAction.Label, "GamesPage_Batch_Skipped_Processing"));
@@ -296,6 +309,49 @@ public partial class GameGridPageModel : ObservableObject
                         {
                             Logger.Error(err, $"Batch swap failed for \"{game.Title}\".");
                             results.Add(ErrorResult(game, dllAction.Label, err.Message, false));
+                        }
+                    }
+
+                    // Restore actions before preset actions (so a same-type preset applies over the restored DLL).
+                    foreach (var restoreAction in restoreActions)
+                    {
+                        try
+                        {
+                            if (game.Processing == true)
+                            {
+                                results.Add(SkippedResult(game, restoreAction.Label, "GamesPage_Batch_Skipped_Processing"));
+                                continue;
+                            }
+
+                            var currentAssets = game.GameAssets.Where(x => x.AssetType == restoreAction.Type).ToList();
+                            var backupType = DLLManager.Instance.GetAssetBackupType(restoreAction.Type);
+                            var backups = game.GameAssets.Where(x => x.AssetType == backupType).ToList();
+                            if (currentAssets.Count == 0 && backups.Count == 0)
+                            {
+                                results.Add(SkippedResult(game, restoreAction.Label, "GamesPage_Batch_Skipped_NoAsset"));
+                            }
+                            else if (backups.Count == 0)
+                            {
+                                results.Add(SkippedResult(game, restoreAction.Label, "GamesPage_Batch_Skipped_NoBackup"));
+                            }
+                            else if (backups.Any(b => currentAssets.Count(c => c.Path == b.Path.Replace(".dlsss", string.Empty)) != 1))
+                            {
+                                results.Add(ErrorResult(game, restoreAction.Label, orphanBackupMessage, false));
+                            }
+                            else
+                            {
+                                // Note: ResetDllAsync can move earlier files before an error and leave SQLite stale
+                                // until a scan, as it already can for a single-game reset.
+                                var reset = await game.ResetDllAsync(restoreAction.Type);
+                                results.Add(reset.Success
+                                    ? SwappedResult(game, restoreAction.Label)
+                                    : ErrorResult(game, restoreAction.Label, reset.Message, reset.PromptToRelaunchAsAdmin));
+                            }
+                        }
+                        catch (Exception err)
+                        {
+                            Logger.Error(err, $"Batch restore failed for \"{game.Title}\".");
+                            results.Add(ErrorResult(game, restoreAction.Label, err.Message, false));
                         }
                     }
 
@@ -935,5 +991,7 @@ enum PresetOutcome
 }
 
 readonly record struct BatchDllActionItem(GameAssetType Type, DLLRecord Record, string Label);
+
+readonly record struct BatchRestoreActionItem(GameAssetType Type, string Label);
 
 readonly record struct BatchPresetActionItem(GameAssetType Type, uint PresetValue, string Label);

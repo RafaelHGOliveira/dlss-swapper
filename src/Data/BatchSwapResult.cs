@@ -4,6 +4,7 @@ namespace DLSS_Swapper.Data;
 
 public enum BatchSwapStatus
 {
+    // Covers successfully applied changes: DLL swaps, DLL restores, and preset updates.
     Swapped,
     Skipped,
     Error,
@@ -23,7 +24,7 @@ public class BatchSwapResult
     // thread at display time, not inside the batch worker.
     public string ReasonKey { get; init; } = string.Empty;
 
-    // Raw (unlocalised) message from Game.UpdateDllAsync when Status is Error.
+    // Raw (unlocalised) message from the game operation when Status is Error.
     public string ErrorMessage { get; init; } = string.Empty;
 
     public bool PromptToRelaunchAsAdmin { get; init; }

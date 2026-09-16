@@ -72,7 +72,7 @@
                 </ItemsControl>
             </StackPanel>
 
-            <!-- FSR group (hidden when no versions available) -->
+            <!-- FSR group -->
             <StackPanel Orientation="Vertical" Spacing="8" Visibility="{x:Bind ViewModel.HasFsrRows, Converter={StaticResource BoolToVisibilityConverter}}">
                 <TextBlock Text="{x:Bind ViewModel.TranslationProperties.FsrGroupText, Mode=OneWay}" Style="{ThemeResource SubtitleTextBlockStyle}" />
                 <ItemsControl ItemsSource="{x:Bind ViewModel.FsrRows}">
@@ -97,7 +97,7 @@
                 </ItemsControl>
             </StackPanel>
 
-            <!-- XeSS group (hidden when no versions available) -->
+            <!-- XeSS group -->
             <StackPanel Orientation="Vertical" Spacing="8" Visibility="{x:Bind ViewModel.HasXeSSRows, Converter={StaticResource BoolToVisibilityConverter}}">
                 <TextBlock Text="{x:Bind ViewModel.TranslationProperties.XessGroupText, Mode=OneWay}" Style="{ThemeResource SubtitleTextBlockStyle}" />
                 <ItemsControl ItemsSource="{x:Bind ViewModel.XeSSRows}">

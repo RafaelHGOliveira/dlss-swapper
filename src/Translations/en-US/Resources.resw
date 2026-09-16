@@ -391,6 +391,9 @@ To verify what preset is being used please enable the DLSS on-screen indicator.<
   <data name="GamesPage_Batch_Error_Generic" xml:space="preserve">
     <value>Failed (state possibly partial — verify this game)</value>
   </data>
+  <data name="GamesPage_Batch_Error_OrphanBackup" xml:space="preserve">
+    <value>Backup DLL has no matching game file (repair game files manually)</value>
+  </data>
   <data name="GamesPage_Batch_Error_PossiblyPartialTemplate" xml:space="preserve">
     <value>{0} (state possibly partial — verify this game)</value>
   </data>
@@ -429,6 +432,10 @@ To verify what preset is being used please enable the DLSS on-screen indicator.<
     <value>Preset {0} → {1}</value>
     <comment>{0} = DLL type name (e.g. DLSS), {1} = preset name (e.g. D)</comment>
   </data>
+  <data name="GamesPage_Batch_RestoreLabelTemplate" xml:space="preserve">
+    <value>{0} → {1}</value>
+    <comment>{0} = DLL type name (e.g. DLSS), {1} = restore action name (e.g. Restore original DLL)</comment>
+  </data>
   <data name="GamesPage_Batch_Skipped_Incompatible" xml:space="preserve">
     <value>Incompatible DLSS generation</value>
   </data>
@@ -437,6 +444,9 @@ To verify what preset is being used please enable the DLSS on-screen indicator.<
   </data>
   <data name="GamesPage_Batch_Skipped_NoAsset" xml:space="preserve">
     <value>Game does not use this DLL type</value>
+  </data>
+  <data name="GamesPage_Batch_Skipped_NoBackup" xml:space="preserve">
+    <value>No original DLL backup found (verify game files manually to recover it)</value>
   </data>
   <data name="GamesPage_Batch_Skipped_Processing" xml:space="preserve">
     <value>Game is currently processing</value>
@@ -452,7 +462,7 @@ To verify what preset is being used please enable the DLSS on-screen indicator.<
     <value>Skipped:</value>
   </data>
   <data name="GamesPage_Batch_Summary_Swapped" xml:space="preserve">
-    <value>Swapped:</value>
+    <value>Applied:</value>
   </data>
   <data name="GamesPage_Batch_Summary_SwappedTemplate" xml:space="preserve">
     <value>{0} change(s) across {1} game(s)</value>
