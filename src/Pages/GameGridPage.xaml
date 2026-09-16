@@ -249,7 +249,7 @@
                         <FontIcon Glyph="&#xE946;" />
                     </AppBarButton.Content>
                 </AppBarButton>
-                <AppBarButton Label="{x:Bind ViewModel.TranslationProperties.AddGameText, Mode=OneWay}" Command="{x:Bind ViewModel.AddManualGameButtonCommand}" IsEnabled="{x:Bind ViewModel.CanUseFilterAndView, Mode=OneWay}">
+                <AppBarButton Label="{x:Bind ViewModel.TranslationProperties.AddGameText, Mode=OneWay}" Command="{x:Bind ViewModel.AddManualGameButtonCommand}" IsEnabled="{x:Bind ViewModel.CanAddGameAndChangeView, Mode=OneWay}">
                     <AppBarButton.Content>
                         <FontIcon Glyph="&#xE710;" />
                     </AppBarButton.Content>
@@ -259,17 +259,17 @@
                         <FontIcon Glyph="&#xE72C;" />
                     </AppBarButton.Content>
                 </AppBarButton>
-                <AppBarButton Label="{x:Bind ViewModel.TranslationProperties.SelectText, Mode=OneWay}" Command="{x:Bind ViewModel.ToggleSelectionModeCommand}" IsEnabled="{x:Bind ViewModel.IsGameListLoading, Converter={StaticResource BoolNegationConverter}, Mode=OneWay}">
+                <AppBarButton Label="{x:Bind ViewModel.TranslationProperties.BulkSwapText, Mode=OneWay}" Command="{x:Bind ViewModel.ToggleSelectionModeCommand}" IsEnabled="{x:Bind ViewModel.IsGameListLoading, Converter={StaticResource BoolNegationConverter}, Mode=OneWay}">
                     <AppBarButton.Content>
                         <FontIcon Glyph="&#xE762;" />
                     </AppBarButton.Content>
                 </AppBarButton>
-                <AppBarButton Icon="Filter" Label="{x:Bind ViewModel.TranslationProperties.FilterText, Mode=OneWay}" Command="{x:Bind ViewModel.FilterGamesButtonCommand}" IsEnabled="{x:Bind ViewModel.CanUseFilterAndView, Mode=OneWay}">
+                <AppBarButton Icon="Filter" Label="{x:Bind ViewModel.TranslationProperties.FilterText, Mode=OneWay}" Command="{x:Bind ViewModel.FilterGamesButtonCommand}" IsEnabled="{x:Bind ViewModel.CanUseFilter, Mode=OneWay}">
                     <AppBarButton.Content>
                         <FontIcon Glyph="&#xE71C;" />
                     </AppBarButton.Content>
                 </AppBarButton>
-                <AppBarButton Label="{x:Bind ViewModel.TranslationProperties.ViewTypeText, Mode=OneWay}" Content="{x:Bind ViewModel.GameGridViewIcon, Mode=OneWay}" IsEnabled="{x:Bind ViewModel.CanUseFilterAndView, Mode=OneWay}">
+                <AppBarButton Label="{x:Bind ViewModel.TranslationProperties.ViewTypeText, Mode=OneWay}" Content="{x:Bind ViewModel.GameGridViewIcon, Mode=OneWay}" IsEnabled="{x:Bind ViewModel.CanAddGameAndChangeView, Mode=OneWay}">
                     <AppBarButton.Flyout>
                         <MenuFlyout>
                             <MenuFlyoutItem Text="{x:Bind ViewModel.TranslationProperties.GridViewText, Mode=OneWay}" Command="{x:Bind ViewModel.ChangeGameGridViewCommand}" CommandParameter="{x:Bind pages:GameGridViewType.GridView}" />
@@ -303,10 +303,10 @@
                 Visibility="{x:Bind ViewModel.IsSelectionMode, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
             <StackPanel Orientation="Horizontal" Spacing="12">
                 <TextBlock Text="{x:Bind ViewModel.SelectedGamesCountText, Mode=OneWay}" VerticalAlignment="Center" />
-                <Button Content="{x:Bind ViewModel.SelectAllButtonText, Mode=OneWay}" Command="{x:Bind ViewModel.ToggleSelectAllCommand}" />
-                <Button Style="{StaticResource AccentButtonStyle}" Content="{x:Bind ViewModel.TranslationProperties.ApplyDllText, Mode=OneWay}" Command="{x:Bind ViewModel.ApplyBatchDllCommand}" />
-                <Button Content="{x:Bind ViewModel.TranslationProperties.ClearText, Mode=OneWay}" Command="{x:Bind ViewModel.ClearSelectionCommand}" />
-                <Button Content="{x:Bind ViewModel.TranslationProperties.DoneText, Mode=OneWay}" Command="{x:Bind ViewModel.ToggleSelectionModeCommand}" />
+                <Button Content="{x:Bind ViewModel.TranslationProperties.SelectAllText, Mode=OneWay}" Command="{x:Bind ViewModel.SelectAllVisibleCommand}" />
+                <Button Content="{x:Bind ViewModel.TranslationProperties.SelectNoneText, Mode=OneWay}" Command="{x:Bind ViewModel.ClearSelectionCommand}" />
+                <Button Style="{StaticResource AccentButtonStyle}" Content="{x:Bind ViewModel.TranslationProperties.SelectDllsText, Mode=OneWay}" Command="{x:Bind ViewModel.ApplyBatchDllCommand}" />
+                <Button Content="{x:Bind ViewModel.TranslationProperties.CloseText, Mode=OneWay}" Command="{x:Bind ViewModel.ToggleSelectionModeCommand}" />
             </StackPanel>
         </Border>
 

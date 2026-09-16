@@ -4,6 +4,8 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.System;
 using AsyncAwaitBestPractices;
@@ -233,6 +235,12 @@ public sealed partial class GameGridPage : Page
         }
         listControl.SelectionMode = ListViewSelectionMode.None;
         listControl.IsItemClickEnabled = true;
+    }
+
+    internal IEnumerable<Game> GetDistinctVisibleGames()
+    {
+        var list = GetActiveListControl();
+        return list is null ? Enumerable.Empty<Game>() : list.Items.OfType<Game>().Distinct().ToList();
     }
 
     // Number of items the active list is currently showing, which is what

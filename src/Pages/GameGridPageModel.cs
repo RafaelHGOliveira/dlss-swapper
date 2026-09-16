@@ -34,7 +34,8 @@ public partial class GameGridPageModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsLoading))]
-    [NotifyPropertyChangedFor(nameof(CanUseFilterAndView))]
+    [NotifyPropertyChangedFor(nameof(CanUseFilter))]
+    [NotifyPropertyChangedFor(nameof(CanAddGameAndChangeView))]
     [NotifyPropertyChangedFor(nameof(CanRefresh))]
     public partial bool IsGameListLoading { get; set; } = true;
 
@@ -69,7 +70,7 @@ public partial class GameGridPageModel : ObservableObject
     public GameGridPageModelTranslationProperties TranslationProperties { get; } = new GameGridPageModelTranslationProperties();
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanUseFilterAndView))]
+    [NotifyPropertyChangedFor(nameof(CanAddGameAndChangeView))]
     [NotifyPropertyChangedFor(nameof(CanRefresh))]
     public partial bool IsSelectionMode { get; set; } = false;
 
@@ -79,20 +80,8 @@ public partial class GameGridPageModel : ObservableObject
 
     public bool CanApplyBatchDll => SelectedGames.Count > 0;
 
-    bool AreAllVisibleGamesSelected
-    {
-        get
-        {
-            var visibleCount = gameGridPage.GetVisibleItemCount();
-            return visibleCount > 0 && gameGridPage.GetVisibleSelectedCount() == visibleCount;
-        }
-    }
-
-    public string SelectAllButtonText => AreAllVisibleGamesSelected
-        ? ResourceHelper.GetString("GamesPage_SelectionMode_DeselectAll")
-        : ResourceHelper.GetString("GamesPage_SelectionMode_SelectAll");
-
-    public bool CanUseFilterAndView => IsGameListLoading == false && IsSelectionMode == false;
+    public bool CanUseFilter => IsGameListLoading == false;
+    public bool CanAddGameAndChangeView => IsGameListLoading == false && IsSelectionMode == false;
 
     public bool CanRefresh => IsLoading == false && IsSelectionMode == false;
 
@@ -114,18 +103,13 @@ public partial class GameGridPageModel : ObservableObject
     }
 
     [RelayCommand]
-    void ToggleSelectAll()
+    void SelectAllVisible()
     {
-        if (AreAllVisibleGamesSelected == true)
+        foreach (var game in gameGridPage.GetDistinctVisibleGames())
         {
-            SelectedGames.Clear();
-            gameGridPage.ResyncVisualSelection();
+            if (SelectedGames.Contains(game) == false) SelectedGames.Add(game);
         }
-        else
-        {
-            gameGridPage.SelectAllVisible();
-        }
-
+        gameGridPage.ResyncVisualSelection();
         NotifySelectionChanged();
     }
 
@@ -608,10 +592,9 @@ public partial class GameGridPageModel : ObservableObject
         NotifySelectionChanged();
     }
 
-    void NotifySelectionChanged()
+    internal void NotifySelectionChanged()
     {
         OnPropertyChanged(nameof(SelectedGamesCountText));
-        OnPropertyChanged(nameof(SelectAllButtonText));
         OnPropertyChanged(nameof(CanApplyBatchDll));
         ApplyBatchDllCommand.NotifyCanExecuteChanged();
     }
