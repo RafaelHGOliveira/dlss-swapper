@@ -573,17 +573,14 @@ public partial class GameGridPageModel : ObservableObject
 
     internal void UpdateSelection(IList<object> addedItems, IList<object> removedItems)
     {
-        foreach (var item in removedItems)
+        foreach (var game in removedItems.OfType<Game>().Distinct())
         {
-            if (item is Game game)
-            {
-                SelectedGames.Remove(game);
-            }
+            SelectedGames.Remove(game);
         }
 
-        foreach (var item in addedItems)
+        foreach (var game in addedItems.OfType<Game>().Distinct())
         {
-            if (item is Game game && SelectedGames.Contains(game) == false)
+            if (SelectedGames.Contains(game) == false)
             {
                 SelectedGames.Add(game);
             }
@@ -881,12 +878,21 @@ public partial class GameGridPageModel : ObservableObject
 
     void ApplyGameGroupFilter()
     {
-        // TODO: Remove weird hack which otherwise causes MainGridView_SelectionChanged to fire when changing MainGridView.ItemsSource.
-        //gameGridPage.MainGridView.SelectionChanged -= MainGridView_SelectionChanged;
+        if (IsSelectionMode == true)
+        {
+            gameGridPage.BeginSuppressSelectionEvents();
+        }
 
-        //MainGridView.ItemsSource = null;
+        var searchText = gameGridPage.SearchText;
         CurrentCollectionView = null;
-        CurrentCollectionView = GameManager.Instance.GetGameCollection();
+        CurrentCollectionView = string.IsNullOrEmpty(searchText)
+            ? GameManager.Instance.GetGameCollection()
+            : GameManager.Instance.GetGameCollection(searchText);
+
+        if (IsSelectionMode == true)
+        {
+            gameGridPage.ResyncVisualSelectionAfterViewChange();
+        }
     }
 
     [RelayCommand]

@@ -2,6 +2,7 @@ using DLSS_Swapper.Data;
 using DLSS_Swapper.UserControls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using System;
 using System.Collections.Generic;
@@ -195,7 +196,10 @@ public sealed partial class GameGridPage : Page
         SearchBox.Text = string.Empty;
     }
 
+    internal string SearchText => SearchBox.Text;
+
     bool _isSyncingSelection;
+    int _viewSyncGeneration;
 
     ListViewBase? GetActiveListControl()
     {
@@ -213,6 +217,7 @@ public sealed partial class GameGridPage : Page
         listControl.SelectionMode = ListViewSelectionMode.Multiple;
         listControl.IsItemClickEnabled = false;
         listControl.SelectionChanged += ListControl_SelectionChanged;
+        ResyncVisualSelection();
     }
 
     internal void ExitSelectionMode()
@@ -227,7 +232,10 @@ public sealed partial class GameGridPage : Page
         _isSyncingSelection = true;
         try
         {
-            listControl.SelectedItems.Clear();
+            if (listControl.Items.Count > 0)
+            {
+                listControl.DeselectRange(new ItemIndexRange(0, (uint)listControl.Items.Count));
+            }
         }
         finally
         {
@@ -243,42 +251,6 @@ public sealed partial class GameGridPage : Page
         return list is null ? Enumerable.Empty<Game>() : list.Items.OfType<Game>().Distinct().ToList();
     }
 
-    // Number of items the active list is currently showing, which is what
-    // "select all" acts on -- the current filter and search already applied.
-    internal int GetVisibleItemCount()
-    {
-        return GetActiveListControl()?.Items.Count ?? 0;
-    }
-
-    // Number of currently visible items that are also selected. SelectedGames can
-    // contain games hidden by the current search filter, so SelectedGames.Count
-    // alone says nothing about the visible items.
-    internal int GetVisibleSelectedCount()
-    {
-        var listControl = GetActiveListControl();
-        if (listControl is null)
-        {
-            return 0;
-        }
-
-        var count = 0;
-        foreach (var game in ViewModel.SelectedGames)
-        {
-            if (listControl.Items.Contains(game))
-            {
-                ++count;
-            }
-        }
-        return count;
-    }
-
-    internal void SelectAllVisible()
-    {
-        // SelectAll raises SelectionChanged, so the view model picks the games up
-        // through the usual UpdateSelection path.
-        GetActiveListControl()?.SelectAll();
-    }
-
     void ListControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (_isSyncingSelection == true)
@@ -287,11 +259,13 @@ public sealed partial class GameGridPage : Page
         }
 
         ViewModel.UpdateSelection(e.AddedItems, e.RemovedItems);
+        ResyncVisualSelection();
     }
 
     internal void BeginSuppressSelectionEvents()
     {
         _isSyncingSelection = true;
+        _viewSyncGeneration++;
     }
 
     // Called after CurrentCollectionView changes while selection mode is active.
@@ -299,9 +273,17 @@ public sealed partial class GameGridPage : Page
     // selection is re-applied at low priority, after the list picked it up.
     internal void ResyncVisualSelectionAfterViewChange()
     {
+        var generation = _viewSyncGeneration;
         var enqueued = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
         {
+            if (generation != _viewSyncGeneration)
+            {
+                // A newer view change has already been requested; ignore this stale callback.
+                return;
+            }
+
             ResyncVisualSelection();
+            ViewModel.NotifySelectionChanged();
         });
 
         // BeginSuppressSelectionEvents set _isSyncingSelection before the ItemsSource
@@ -325,12 +307,16 @@ public sealed partial class GameGridPage : Page
         _isSyncingSelection = true;
         try
         {
-            listControl.SelectedItems.Clear();
-            foreach (var game in ViewModel.SelectedGames)
+            if (listControl.Items.Count > 0)
             {
-                if (listControl.Items.Contains(game))
+                listControl.DeselectRange(new ItemIndexRange(0, (uint)listControl.Items.Count));
+            }
+
+            for (var index = 0; index < listControl.Items.Count; index++)
+            {
+                if (listControl.Items[index] is Game game && ViewModel.SelectedGames.Contains(game))
                 {
-                    listControl.SelectedItems.Add(game);
+                    listControl.SelectRange(new ItemIndexRange(index, 1));
                 }
             }
         }
