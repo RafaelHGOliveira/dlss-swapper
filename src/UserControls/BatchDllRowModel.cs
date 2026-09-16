@@ -7,12 +7,19 @@ using DLSS_Swapper.Helpers;
 
 namespace DLSS_Swapper.UserControls;
 
-// One selectable DLL version inside a batch picker row. A null Record is the
-// "Don't change" sentinel that leaves this row's DLL untouched.
+public enum BatchDllOptionKind
+{
+    NoChange,
+    Restore,
+    Version,
+}
+
+// One selectable DLL version inside a batch picker row.
 public class BatchDllOption
 {
     public string DisplayName { get; init; } = string.Empty;
     public DLLRecord? Record { get; init; }
+    public BatchDllOptionKind Kind { get; init; } = BatchDllOptionKind.NoChange;
 }
 
 // A single type row (DLSS, FSR_31_VK, ...). Holds its own DLL-version options and,
@@ -76,7 +83,9 @@ public partial class BatchDllRowModel : ObservableObject
         SelectedPreset = _presetSentinel;
     }
 
-    public bool HasDllAction => SelectedDllOption?.Record is not null;
+    public bool HasDllAction => SelectedDllOption?.Kind == BatchDllOptionKind.Version;
+
+    public bool HasRestoreAction => SelectedDllOption?.Kind == BatchDllOptionKind.Restore;
 
     public bool HasPresetAction =>
         HasPreset

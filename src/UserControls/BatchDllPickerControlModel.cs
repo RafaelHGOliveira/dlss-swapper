@@ -32,6 +32,7 @@ public partial class BatchDllPickerControlModel : ObservableObject
         parentDialog.IsPrimaryButtonEnabled = false;
 
         var noChangeText = ResourceHelper.GetString("GamesPage_Batch_NoChange");
+        var restoreText = ResourceHelper.GetString("GamePage_RestoreOriginalDll");
         var presetSupported = NVAPIHelper.Instance.IsSupported;
         PresetsUnsupported = presetSupported == false;
 
@@ -40,14 +41,14 @@ public partial class BatchDllPickerControlModel : ObservableObject
         // DLL). Each preset type uses its OWN option list.
         DlssRows = new List<BatchDllRowModel>
         {
-            BuildPresetRow(GameAssetType.DLSS, noChangeText, NVAPIHelper.Instance.DlssPresetOptions, presetSupported),
-            BuildPresetRow(GameAssetType.DLSS_D, noChangeText, NVAPIHelper.Instance.DlssDPresetOptions, presetSupported),
-            BuildPresetRow(GameAssetType.DLSS_G, noChangeText, NVAPIHelper.Instance.DlssGPresetOptions, presetSupported),
+            BuildPresetRow(GameAssetType.DLSS, noChangeText, restoreText, NVAPIHelper.Instance.DlssPresetOptions, presetSupported),
+            BuildPresetRow(GameAssetType.DLSS_D, noChangeText, restoreText, NVAPIHelper.Instance.DlssDPresetOptions, presetSupported),
+            BuildPresetRow(GameAssetType.DLSS_G, noChangeText, restoreText, NVAPIHelper.Instance.DlssGPresetOptions, presetSupported),
         };
 
-        // DLL-only rows only appear when at least one DLL version is available.
-        FsrRows = BuildDllOnlyRows(noChangeText, new[] { GameAssetType.FSR_31_DX12, GameAssetType.FSR_31_VK });
-        XeSSRows = BuildDllOnlyRows(noChangeText, new[] { GameAssetType.XeSS, GameAssetType.XeSS_FG, GameAssetType.XeSS_DX11, GameAssetType.XeLL });
+        // All supported rows are always shown.
+        FsrRows = BuildDllOnlyRows(noChangeText, restoreText, new[] { GameAssetType.FSR_31_DX12, GameAssetType.FSR_31_VK });
+        XeSSRows = BuildDllOnlyRows(noChangeText, restoreText, new[] { GameAssetType.XeSS, GameAssetType.XeSS_FG, GameAssetType.XeSS_DX11, GameAssetType.XeLL });
 
         foreach (var row in AllRows())
         {
@@ -55,32 +56,27 @@ public partial class BatchDllPickerControlModel : ObservableObject
         }
     }
 
-    BatchDllRowModel BuildPresetRow(GameAssetType type, string noChangeText, IReadOnlyList<PresetOption> presetOptions, bool presetEnabled)
+    BatchDllRowModel BuildPresetRow(GameAssetType type, string noChangeText, string restoreText, IReadOnlyList<PresetOption> presetOptions, bool presetEnabled)
     {
-        var options = BuildDllOptions(type, noChangeText);
+        var options = BuildDllOptions(type, noChangeText, restoreText);
         // Sentinel value 0xFFFFFFFF is not a real preset (PresetOption.UpdateNameFromTranslation
         // leaves unknown values untouched), so it never collides with Default (0).
         var sentinel = new PresetOption(noChangeText, 0xFFFFFFFF);
         return new BatchDllRowModel(type, DLLManager.Instance.GetAssetTypeName(type), options, sentinel, presetOptions, presetEnabled);
     }
 
-    List<BatchDllRowModel> BuildDllOnlyRows(string noChangeText, GameAssetType[] types)
+    List<BatchDllRowModel> BuildDllOnlyRows(string noChangeText, string restoreText, GameAssetType[] types)
     {
         var rows = new List<BatchDllRowModel>();
         foreach (var type in types)
         {
-            var options = BuildDllOptions(type, noChangeText);
-            // options[0] is the sentinel; a real version exists only if count > 1.
-            if (options.Count <= 1)
-            {
-                continue;
-            }
+            var options = BuildDllOptions(type, noChangeText, restoreText);
             rows.Add(new BatchDllRowModel(type, DLLManager.Instance.GetAssetTypeName(type), options, null, null, false));
         }
         return rows;
     }
 
-    static List<BatchDllOption> BuildDllOptions(GameAssetType type, string noChangeText)
+    static List<BatchDllOption> BuildDllOptions(GameAssetType type, string noChangeText, string restoreText)
     {
         // NOTE: DLL type
         var records = type switch
@@ -114,9 +110,10 @@ public partial class BatchDllPickerControlModel : ObservableObject
 
         var options = new List<BatchDllOption>
         {
-            new BatchDllOption { DisplayName = noChangeText, Record = null },
+            new BatchDllOption { DisplayName = noChangeText, Kind = BatchDllOptionKind.NoChange, Record = null },
+            new BatchDllOption { DisplayName = restoreText, Kind = BatchDllOptionKind.Restore, Record = null },
         };
-        options.AddRange(records.Select(r => new BatchDllOption { DisplayName = r.DisplayName, Record = r }));
+        options.AddRange(records.Select(r => new BatchDllOption { DisplayName = r.DisplayName, Kind = BatchDllOptionKind.Version, Record = r }));
         return options;
     }
 
@@ -126,7 +123,7 @@ public partial class BatchDllPickerControlModel : ObservableObject
         {
             if (_parentDialogWeakReference.TryGetTarget(out var dialog) == true)
             {
-                dialog.IsPrimaryButtonEnabled = AllRows().Any(r => r.HasDllAction || r.HasPresetAction);
+                dialog.IsPrimaryButtonEnabled = AllRows().Any(r => r.HasDllAction || r.HasRestoreAction || r.HasPresetAction);
             }
         }
     }
@@ -138,6 +135,12 @@ public partial class BatchDllPickerControlModel : ObservableObject
         AllRows()
             .Where(r => r.HasDllAction)
             .Select(r => (r.Type, r.SelectedDllOption!.Record!))
+            .ToList();
+
+    public List<GameAssetType> PlannedRestoreActions =>
+        AllRows()
+            .Where(r => r.HasRestoreAction)
+            .Select(r => r.Type)
             .ToList();
 
     public List<(GameAssetType Type, PresetOption Preset)> PlannedPresetActions =>
