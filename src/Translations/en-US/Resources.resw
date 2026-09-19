@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!--
     Microsoft ResX Schema
@@ -436,6 +436,9 @@ To verify what preset is being used please enable the DLSS on-screen indicator.<
     <value>{0} → {1}</value>
     <comment>{0} = DLL type name (e.g. DLSS), {1} = restore action name (e.g. Restore original DLL)</comment>
   </data>
+  <data name="GamesPage_Batch_Skipped_AlreadyOriginal" xml:space="preserve">
+    <value>Game already uses the original DLL</value>
+  </data>
   <data name="GamesPage_Batch_Skipped_Incompatible" xml:space="preserve">
     <value>Incompatible DLSS generation</value>
   </data>
@@ -445,9 +448,6 @@ To verify what preset is being used please enable the DLSS on-screen indicator.<
   <data name="GamesPage_Batch_Skipped_NoAsset" xml:space="preserve">
     <value>Game does not use this DLL type</value>
   </data>
-  <data name="GamesPage_Batch_Skipped_NoBackup" xml:space="preserve">
-    <value>No original DLL backup found (verify game files manually to recover it)</value>
-  </data>
   <data name="GamesPage_Batch_Skipped_Processing" xml:space="preserve">
     <value>Game is currently processing</value>
   </data>
@@ -455,8 +455,8 @@ To verify what preset is being used please enable the DLSS on-screen indicator.<
     <value>Errors:</value>
   </data>
   <data name="GamesPage_Batch_Summary_NotApplicableTemplate" xml:space="preserve">
-    <value>{0} change(s) did not apply because the game does not use that DLL type.</value>
-    <comment>{0} = number of planned changes that were not applicable</comment>
+    <value>{0} change(s) were skipped because they did not apply to the game or were not needed.</value>
+    <comment>{0} = number of planned changes that were not applicable (game does not use that DLL type, already uses the original DLL, or presets are unsupported)</comment>
   </data>
   <data name="GamesPage_Batch_Summary_Skipped" xml:space="preserve">
     <value>Skipped:</value>

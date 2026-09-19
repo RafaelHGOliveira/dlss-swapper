@@ -13,6 +13,7 @@ class BatchSwapSummaryControlModel
     static readonly HashSet<string> NotApplicableReasonKeys = new HashSet<string>()
     {
         "GamesPage_Batch_Skipped_NoAsset",
+        "GamesPage_Batch_Skipped_AlreadyOriginal",
         "GamesPage_Batch_Preset_Skipped_NoAsset",
         "GamesPage_Batch_Preset_Skipped_Unsupported",
     };

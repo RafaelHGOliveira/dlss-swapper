@@ -332,7 +332,8 @@ public partial class GameGridPageModel : ObservableObject
                             }
                             else if (backups.Count == 0)
                             {
-                                results.Add(SkippedResult(game, restoreAction.Label, "GamesPage_Batch_Skipped_NoBackup"));
+                                // Backups are only created on swap, so a DLL without one is the game's original.
+                                results.Add(SkippedResult(game, restoreAction.Label, "GamesPage_Batch_Skipped_AlreadyOriginal"));
                             }
                             else if (backups.Any(b => currentAssets.Count(c => c.Path == b.Path.Replace(".dlsss", string.Empty)) != 1))
                             {
