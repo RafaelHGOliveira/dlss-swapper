@@ -469,7 +469,7 @@ To verify what preset is being used please enable the DLSS on-screen indicator.<
     <comment>{0} = number of DLL/preset changes made, {1} = number of games they were made in</comment>
   </data>
   <data name="GamesPage_Batch_SummaryTitle" xml:space="preserve">
-    <value>Batch swap summary</value>
+    <value>Bulk swap summary</value>
   </data>
   <data name="GamesPage_Batch_Title" xml:space="preserve">
     <value>Apply DLL to selected games</value>
@@ -610,9 +610,6 @@ If you have checked these and your game is still not showing up there may be a b
   </data>
   <data name="General_Cancel" xml:space="preserve">
     <value>Cancel</value>
-  </data>
-  <data name="General_Clear" xml:space="preserve">
-    <value>Clear</value>
   </data>
   <data name="General_Close" xml:space="preserve">
     <value>Close</value>
