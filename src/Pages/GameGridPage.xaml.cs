@@ -269,12 +269,12 @@ public sealed partial class GameGridPage : Page
     }
 
     // Called after CurrentCollectionView changes while selection mode is active.
-    // The binding applies the new ItemsSource asynchronously, so the visual
-    // selection is re-applied at low priority, after the list picked it up.
+    // Swapping the ItemsSource clears the list's visual selection, so it is
+    // re-applied from the view model's SelectedGames afterwards.
     internal void ResyncVisualSelectionAfterViewChange()
     {
         var generation = _viewSyncGeneration;
-        var enqueued = DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+        var enqueued = DispatcherQueue.TryEnqueue(() =>
         {
             if (generation != _viewSyncGeneration)
             {
